@@ -7,13 +7,13 @@ class Module
 	
 	protected $api;
 	
-	function __construct(API $api)
+	function __construct(API $api, $called = false)
 	{
 		$this->api = $api;
 		
 		// Check if we need a session
 		
-		if($this->requires_session && !$this->api->auth->_get_session_id())
+		if($called && $this->requires_session && !$this->api->auth->_get_session_id())
 		{
 			$this->api->error('Invalid session or session has expired. Please authenticate.');
 		}
@@ -27,5 +27,15 @@ class Module
 				$this->api->load_module($dependency);
 			}
 		}
+	}
+	
+	public function _requires_session()
+	{
+		return $this->requires_session;
+	}
+	
+	public function _dependencies()
+	{
+		return $this->dependencies;
 	}
 }

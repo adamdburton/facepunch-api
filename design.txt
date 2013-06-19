@@ -1,0 +1,29 @@
+Versioning
+
+All urls start with /v*/, where * is the implementation number. No decimals and no granular versioning.
+
+Endpoints
+
+/auth/login/:username/:md5password
+/auth/cookie_login/:bb_userid/:bb_password/:bb_sessionhash
+
+/forum/id/:id
+/forum/id/:id/:page
+
+/thread/id/:id
+/thread/id/:id/:page
+
+/post/id/:id
+
+/user/id/:id
+/user/id/:id/posts
+/user/id/:id/threads
+
+/pm/id/:id
+/pm/folder/:id
+
+Response Codes
+
+OK - 200 OK
+App error - 502 Bad Gateway
+API error - 500 Internal Server Error

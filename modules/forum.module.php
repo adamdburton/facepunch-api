@@ -115,7 +115,7 @@ function parse_forums($str)
 	return $forums;
 }
 
-function parse_threads($str, $include_subforums = true)
+function parse_threads($str, $include_subforums = false)
 {
 	$html = is_string($str) ? str_get_html($str) : $str;
 	
@@ -184,7 +184,7 @@ function parse_threads($str, $include_subforums = true)
 		
 		// Pages
 		
-		$thread['num_pages'] = ($last_a = $title->find('span.threadpagenav a', -1)) ? (int) str_replace(' Last', '', $last_a->plaintext) : 0;
+		$thread['num_pages'] = ($last_a = $title->find('span.threadpagenav a', -1)) ? (int) str_replace(' Last', '', $last_a->plaintext) : 1;
 		
 		// New Posts
 		

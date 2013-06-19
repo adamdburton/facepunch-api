@@ -1,5 +1,7 @@
 <?php
 
+ini_set('display_errors', 1);
+
 $start_time = microtime(true);
 
 include('classes/api.class.php');

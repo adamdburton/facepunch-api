@@ -12,17 +12,26 @@ class API
 	
 	private $module, $action, $parameters;
 	
-	private $memcache;
+	private $cache;
 	
 	function __construct()
 	{
 		// Set up the cache
 		
-		$this->memcache = new Memcache();
-		
-		if(!$this->memcache->connect('localhost', 11211))
+		if(class_exists('Memcache'))
 		{
-			$this->error('Memcache unavailable.');
+			$this->cache = new Memcache();
+		
+			if(!$this->cache->connect('localhost', 11211))
+			{
+				$this->error('Memcache unavailable.');
+			}
+		}
+		else
+		{
+			require_once('simplecache.class.php');
+			
+			$this->cache = new SimpleCache('./cache');
 		}
 		
 		// Split the request
@@ -80,7 +89,7 @@ class API
 		
 		// Module ok, let's load it
 		
-		$this->load_module($parts[1]);
+		$this->load_module($parts[1], true);
 		
 		// Check action
 		
@@ -205,9 +214,21 @@ class API
 		return $json;
 	}
 	
+	function get_modules()
+	{
+		$modules = array();
+		
+		foreach(glob('./modules/*.module.php') as $file)
+		{
+			$modules[] = basename($file, ".module.php");
+		}
+		
+		return $modules;
+	}
+	
 	function module_exists($module)
 	{
-		return file_exists('modules/' . $module . '.module.php');
+		return file_exists('./modules/' . $module . '.module.php');
 	}
 	
 	function module_action_exists($module, $action)
@@ -215,20 +236,22 @@ class API
 		return substr($action, 0, 1) != '_' && is_callable(array($module, $action));
 	}
 	
-	function load_module($module)
+	function load_module($module, $call = false)
 	{
 		if($this->module_exists($module))
 		{
 			if(!isset($this->$module))
 			{
 				include_once('modules/' . $module . '.module.php');
-				$this->$module = new $module($this);
+				$this->$module = new $module($this, $call);
 			}
 		}
 		else
 		{
 			$this->error('Missing module: ' . $module);
 		}
+		
+		return $this->$module;
 	}
 	
 	function request($url, $data = array(), $method = 'GET', $headers = array(), $returnheaders = false)
@@ -263,22 +286,27 @@ class API
 	
 	function cache($key, $value = null)
 	{
-		$val = $this->memcache->get($key);
-		
-		if(!$val && isset($value) || $val && isset($value))
+		if($this->cache)
 		{
-			// Insert or update
-			$this->memcache->set($key, $value);
-			
-			return true;
-		}
-		elseif(!isset($value) && !$key)
-		{
-			// Not set
-			return false;
+			$val = $this->cache->get($key);
+		
+			if(!$val && isset($value) || $val && isset($value))
+			{
+				// Insert or update
+				$this->cache->set($key, $value);
+	
+				return true;
+			}
+			elseif(!isset($value) && !$key)
+			{
+				// Not set
+				return false;
+			}
+
+			return $val;
 		}
 		
-		return $val;
+		return false;
 	}
 }
 
@@ -288,7 +316,8 @@ function get_function_info($object, $function)
 	
 	$reflection = new ReflectionMethod($object, $function);
 	
-	$comment = str_replace("/** ", "", str_replace(" */", "", $reflection->getDocComment()));
+	$comment = substr($reflection->getDocComment(), 4, -4);
+	//$comment = str_replace("/** ", "", str_replace(" */", "", $reflection->getDocComment()));
 	
 	$opt_arg_names = array();
 	$req_arg_names = array();
@@ -299,19 +328,19 @@ function get_function_info($object, $function)
 		
 		if($param->isOptional())
 		{
-			$default = (is_bool($param->getDefaultValue()) ? ($param->getDefaultValue() ? "true" : "false") : $param->getDefaultValue());
-			$opt_arg_names[] = array("name" => $name, "default" => $default);
+			$default = (is_bool($param->getDefaultValue()) ? ($param->getDefaultValue() ? 'true' : 'false') : $param->getDefaultValue());
+			$opt_arg_names[] = array('name' => $name, 'default' => $default);
 		}
 		else
 		{
-			$req_arg_names[] = array("name" => $name);
+			$req_arg_names[] = array('name' => $name);
 		}
 	}
 	
-	$result["name"] = $function;
-	$result["required_arguments"] = $req_arg_names;
-	$result["optional_arguments"] = $opt_arg_names;
-	$result["comment"] = $comment;
+	$result['name'] = $function;
+	$result['required_arguments'] = $req_arg_names;
+	$result['optional_arguments'] = $opt_arg_names;
+	$result['comment'] = $comment;
 	
 	return $result;
 }
@@ -320,7 +349,7 @@ function request($url, $fields = array(), $method = 'GET', $headers = array(), $
 {
 	if($method == 'GET' && count($fields) > 0)
 	{
-		$url .= "?" . http_build_query($fields);
+		$url .= '?' . http_build_query($fields);
 	}
 	
 	$c = curl_init($url);
@@ -337,11 +366,11 @@ function request($url, $fields = array(), $method = 'GET', $headers = array(), $
 	
 	if($method == 'POST')
 	{
-		$f = "";
+		$f = '';
 		
 		foreach($fields as $param => $value)
 		{
-			$f .= $param . "=" . urlencode($value) . "&";
+			$f .= $param . '=' . urlencode($value) . '&';
 		}
 		
 		curl_setopt($c, CURLOPT_POST, true);
