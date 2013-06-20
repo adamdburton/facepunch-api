@@ -9,15 +9,47 @@
 				font-family: 'Montserrat';
 				font-size: 14px;
 				margin: 0;
-				padding: 10px;
+				padding: 0;
+			}
+			
+			a {
+				color: #CC0000;
+			}
+			
+			code {
+				margin: 0 2px;
+				padding: 0px 5px;
+				border: 1px solid #ddd;
+				background-color: #f8f8f8;
+				border-radius: 3px;
+				white-space: nowrap;
+				font-family: monospace;
+			}
+			
+			header {
+				width: 280px;
+				position: fixed;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				padding: 20px;
+				background: #F0F0F0;
+				text-align: right;
+			}
+			
+			header h1 {
+				margin-top: 0;
+				text-transform: uppercase;
+				color: #CC0000;
 			}
 			
 			#container {
-				width: 960px;
+				
+				padding: 15px 20px 20px 340px;
 			}
 			
 			.module {
-				color: #999999;
+				color: #666;
 				border-bottom: 1px solid #DDD;
 				padding: 10px 0;
 			}
@@ -46,9 +78,17 @@
 				margin-bottom: 20px;
 			}
 			
-			.module span {
+			.module a > span {
 				float: right;
 				color: #999999;
+			}
+			
+			.module a > span > span {
+				display: inline-block;
+				font-style: italic;
+				padding-right: 20px;
+				font-size: 12px;
+				text-transform: uppercase;
 			}
 			
 			.module_actions {
@@ -56,11 +96,13 @@
 			}
 			
 			.action {
-				background: #E7F0F7;
-				border: 1px solid #c3d9ec;
-				border-radius: 4px;
+				background: #F0F0F0;
 				padding: 10px;
 				margin-bottom: 20px;
+			}
+			
+			.action.open {
+				background: #E0E0E0;
 			}
 			
 			.action > a {
@@ -70,7 +112,7 @@
 			}
 			
 			.action > a:hover, .action.open > a {
-				color: #000;
+				color: #666;
 			}
 			
 			.action.open > a {
@@ -79,14 +121,17 @@
 			
 			.action span {
 				float: right;
-				color: #999999;
+				color: #666;
 			}
 			
 			.action form {
 				margin-bottom: 20px;
 			}
 			
-			.action form input[type="text"] {
+			.action form input.parameter {
+				-webkit-box-sizing: border-box;
+				-moz-box-sizing: border-box;
+				box-sizing: border-box;
 				width: 100%;
 			}
 			
@@ -97,7 +142,7 @@
 			.action_info h2 {
 				font-size: 16px;
 				margin: 0 0 10px;
-				color: #000;
+				color: #CC0000;
 			}
 			
 			.action_parameters {
@@ -115,56 +160,144 @@
 			
 			.action_parameters th {
 				text-align: left;
-				font-weight: normal;
+				font-weight: bold;
 				border-bottom: 1px solid #999;
-				color: #666;
+				color: #333;
 			}
 			
-			.return {
-				padding: 10px;
-				background: rgba(0, 0, 0, 0.1);
-				box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
-				border-radius: 4px;
+			.response {
+				-webkit-box-sizing: border-box;
+				-moz-box-sizing: border-box;
+				box-sizing: border-box;
+				width: 100%;
+				background: #FFF;
 				font-family: monospace;
-				font-size: 12px;
-				white-space: pre;
 				color: #666;
 				height: 200px;
-				overflow-y: scroll;
 			}
 		</style>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 		<script src="//rawgithub.com/adammark/Markup.js/master/src/markup.min.js"></script>
+		<script src="//rawgithub.com/blueimp/JavaScript-MD5/master/md5.min.js"></script>
 		<script>
-			$('.module > a').live('click', function(e)
+			
+			$(function()
 			{
-				e.preventDefault();
-				$(this).parent().toggleClass('open').find('.module_actions').toggle();
+				$('.module > a').live('click', function(e)
+				{
+					e.preventDefault();
+					$('.module.open > a').not(this).click();
+					$(this).parent().toggleClass('open').find('.module_actions').toggle();
+				});
+			
+				$('.action > a').live('click', function(e)
+				{
+					e.preventDefault();
+					$('.action.open > a').not(this).click();
+					$(this).parent().toggleClass('open').find('.action_info').toggle();
+				});
+			
+				$('form').live('submit', function(e)
+				{
+					e.preventDefault();
+				
+					var $response = $(this).parent().find('.response').html('');
+					var url = $(this).attr('action');
+					var requires_session = $(this).data('requires-session');
+					var session_id = $('input#session_id').val();
+				
+					if(requires_session && session_id == '')
+					{
+						return alert('This module requires authentication. Please authenticate first.');
+					}
+				
+					var post = {};
+				
+					$(this).find('input.parameter').each(function()
+					{
+						var $field = $(this);
+						var name = $field.attr('name');
+						var value = $field.val();
+					
+						if($field.data('required') && value == '')
+						{
+							return alert(name + ' is required.');
+						}
+					
+						if($field.data('password'))
+						{
+							value = md5(value);
+						}
+					
+						if($field.data('method') == 'get')
+						{
+							url += '/' + value;
+						}
+						else
+						{
+							post[name] = value;
+						}
+					});
+				
+					if(requires_session)
+					{
+						url += '/' + session_id;
+					}
+				
+					$.post(url, post, function(data)
+					{
+						if(data.status == 'success' && data.success.session_id)
+						{
+							$('input#session_id').val(data.success.session_id);
+							localStorage.setItem('session_id', data.success.session_id);
+						}
+						
+						if(data.status == 'error' && data.error == 'Invalid session or session has expired. Please authenticate.')
+						{
+							$('input#session_id').val('');
+							localStorage.removeItem('session_id');
+						}
+					
+						$response.html(JSON.stringify(data, undefined, 2))
+					});
+				});
+				
+				if(session_id = localStorage.getItem('session_id'))
+				{
+					$('input#session_id').val(session_id);
+				}
+		
+				$.getJSON('/v1/meta/documentation', function(data)
+				{
+					if(data.success)
+					{
+						var output = Mark.up($('#template').contents().text(), { modules: data.success.modules });
+						$('#container').append(output);
+					}
+					else
+					{
+						alert('Couldn\'t connect to /v1/meta/documentation!');
+					}
+				});
 			});
 			
-			$('.action > a').live('click', function(e)
-			{
-				e.preventDefault();
-				$(this).parent().toggleClass('open').find('.action_info').toggle();
-			});
-		
-			$.getJSON('/v1/meta/documentation', function(data)
-			{
-				if(data.success)
-				{
-					var output = Mark.up($('#template').contents().text(), { modules: data.success.modules });
-					$('#container').append(output);
-					
-					$('.return').html(JSON.stringify(data, undefined, 2));
-				}
-				else
-				{
-					$('#container').append('Couldn\'t connect to /v1/meta/documentation!');
-				}
-			});
 		</script>
 	</head>
 	<body>
+		<header>
+			<h1>Facepunch API</h1>
+			<p><strong>Base URL:</strong> <input type="text" id="base_url" value="" /></p>
+			<p><strong>Session ID:</strong> <input type="text" id="session_id" value="" /></p>
+			
+			<h2>Request Format</h2>
+			<p>All GET parameters to actions are appended to the url as values. For example, the <code>/auth/login</code> action requires <code>username</code> and <code>password</code>, which would be formatted <input type="text" value="/auth/login/Example/5f4dcc3b5aa765d61d8327deb882cf99" />. POST parameters are passed as normal.</p>
+			<p>For requests to actions in modules requiring a session, append the <code>session_id</code> returned from one of the <code>/auth</code> actions to the end of the url.</p>
+			
+			<h2>Response Format</h2>
+			<p>All responses are in <a href="http://en.wikipedia.org/wiki/JSON" target="_blank">json</a> format.</p>
+			<p>Successful requests will return a response with a property of <code>status</code> set to <code>success</code> and a <code>success</code> property containing the response data.</p>
+			<p>Failed or erroneous request will return a response with a property of <code>status</code> set to <code>error</code> and an <code>error</code> property containing the error.</p>
+		</header>
 		<div id="container">
 			
 		</div>
@@ -173,10 +306,10 @@
 	<script type="text/html" id="template">
 		{{modules}}
 			{{name|set>module_name}}
+			{{requires_session|set>module_requires_session}}
 			<div class="module">
-				<a href="#">/{{name}} <span>{{description|downcase}}</span></a>
+				<a href="#">/{{name}} <span><span>{{requires_session|choose>Requires Session}}</span>{{description|downcase}}</span></a>
 				<div class="module_actions">
-				<strong>Requires Session:</strong> {{requires_session|choose>Yes>No}}<br /><br />
 				
 				{{actions}}
 					{{name|set>action_name}}
@@ -184,10 +317,10 @@
 						<a href="#">/{{module_name}}/{{name}} <span>{{description|downcase}}</span></a>
 						
 						<div class="action_info">
-							{{if parameters}}
-								<form action="/v1/{{module_name}}/{{name}}">
-									<h2>Parameters</h2>
-							
+							<form action="/v1/{{module_name}}/{{name}}" data-requires-session="{{module_requires_session}}">
+								<h2>Parameters</h2>
+								
+								{{if parameters}}
 									<table class="action_parameters">
 										<tr>
 											<th style="width: 15%;">Parameter</th>
@@ -200,7 +333,7 @@
 										{{parameters}}
 											<tr class="parameter">
 												<td>{{name}}</td>
-												<td><input type="text" name="{{name}}" {{if required|truthy}}required{{/if}} /></td>
+												<td><input type="{{if name|like>password}}password{{else}}text{{/if}}" name="{{name}}" data-required="{{if required|truthy}}required{{/if}}" data-password="{{if name|like>password}}md5{{/if}}" data-method="{{method}}" class="parameter" /></td>
 												<td>{{required|choose>Yes>No}}</td>
 												<td>{{type|capcase}}</td>
 												<td>{{method|upcase}}</td>
@@ -208,18 +341,20 @@
 											</tr>
 										{{/parameters}}
 									</table>
+								{{else}}
+									<p>There are no parameters for this action.</p>
+								{{/if}}
 								
-									<input type="submit" value="Submit" />
-								</form>
-							{{/if}}
+								<input type="submit" value="Get Response" />
+							</form>
 						
 							{{if returns}}
 								<h2>Return Values</h2>
 							
 								<table class="action_parameters">
 									<tr>
-										<th style="width: 15%;">Parameter</th>
-										<th style="width: 30%;">Type</th>
+										<th style="width: 15%;">Property</th>
+										<th style="width: 15%;">Type</th>
 										<th>Description</th>
 									</tr>
 									{{returns}}
@@ -230,13 +365,13 @@
 										</tr>
 									{{/returns}}
 								</table>
+							{{else}}
+								<p>There are no return values for this action.</p>
 							{{/if}}
 							
-							<h2>Example</h2>
+							<h2>Response</h2>
 							
-							<div class="return">
-								rgerg
-							</div>
+							<textarea class="response"></textarea>
 						</div>
 					</div>
 				{{/actions}}

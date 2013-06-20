@@ -46,11 +46,6 @@ class User extends Module
 	{
 		$message = $_POST['message'];
 		
-		if(!$message || strlen($message) < 1)
-		{
-			$this->api->error('Missing message body.');
-		}
-		
 		//$ret = $this->api->request('member.php', $data, 'POST');
 		
 		return true;

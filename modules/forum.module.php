@@ -107,22 +107,26 @@ function parse_forums($str)
 		
 		$last_post_td = $forum_row->find('td.forumlastpost', 0);
 		$last_post_date = $last_post_td->find('p.lastpostdate', 0);
-		$last_post_link = $last_post_date->find('a', 0);
-		$last_post_user_div = $last_post_td->find('div.LastPostAvatar', 0);
-		$last_post_user_a = $last_post_user_div->find('a', 0);
-		$last_post_user_id = (int) quick_match('members\/(\d+)', $last_post_user_a->href);
 		
-		$forum['last_post'] = array(
-			'time' => trim($last_post_date->plaintext),
-			'post_id' => (int) quick_match('p=(\d+)#', $last_post_link->href),
-			'thread_id' => (int) quick_match('t=(\d+)&', $last_post_link->href),
-			'title' => $last_post_td->find('p.lastposttitle a', 0)->plaintext,
-			'author' => array(
-				'user_id' => $last_post_user_id,
-				'username' => $last_post_user_a->find('img', 0)->alt,
-				'avatar_url' => FACEPUNCH_URL . 'image.php?u=' . $last_post_user_id
-			)
-		);
+		if($last_post_date)
+		{
+			$last_post_link = $last_post_date->find('a', 0);
+			$last_post_user_div = $last_post_td->find('div.LastPostAvatar', 0);
+			$last_post_user_a = $last_post_user_div->find('a', 0);
+			$last_post_user_id = (int) quick_match('members\/(\d+)', $last_post_user_a->href);
+		
+			$forum['last_post'] = array(
+				'time' => trim($last_post_date->plaintext),
+				'post_id' => (int) quick_match('p=(\d+)#', $last_post_link->href),
+				'thread_id' => (int) quick_match('t=(\d+)&', $last_post_link->href),
+				'title' => $last_post_td->find('p.lastposttitle a', 0)->plaintext,
+				'author' => array(
+					'user_id' => $last_post_user_id,
+					'username' => $last_post_user_a->find('img', 0)->alt,
+					'avatar_url' => FACEPUNCH_URL . 'image.php?u=' . $last_post_user_id
+				)
+			);
+		}
 		
 		$forums[] = $forum;
 	}
@@ -214,10 +218,12 @@ function parse_threads($str, $include_subforums = false)
 		
 		$author = $thread_row->find('div.author', 0);
 		$author_link = $author->find('a', 0);
+		$author_id = (int) quick_match('u=(\d+)', $author_link->href);
 		
 		$thread['author'] = array(
-			'user_id' => (int) quick_match('u=(\d+)', $author_link->href),
-			'username' => $author_link->plaintext
+			'user_id' => $author_id,
+			'username' => $author_link->plaintext,
+			'avatar_url' => FACEPUNCH_URL . 'image.php?u=' . $author_id
 		);
 		
 		// Viewers
@@ -229,11 +235,14 @@ function parse_threads($str, $include_subforums = false)
 		$threadrating_div = $thread_row->find('div.threadratings', 0);
 		$has_rating = trim($threadrating_div->plaintext) != '';
 		
-		$thread['thread_rating'] = array(
-			'name' => $has_rating ? $threadrating_div->find('img', 0)->alt : false,
-			'icon_url' => $has_rating ? $threadrating_div->find('img', 0)->src : false,
-			'count' => $has_rating ? (int) $threadrating_div->find('strong', 0)->plaintext : 0,
-		);
+		if($has_rating)
+		{
+			$thread['thread_rating'] = array(
+				'name' => $threadrating_div->find('img', 0)->alt,
+				'icon_url' => $threadrating_div->find('img', 0)->src,
+				'count' => (int) $threadrating_div->find('strong', 0)->plaintext,
+			);
+		}
 		
 		// Last post
 		

@@ -4,7 +4,6 @@ date_default_timezone_set('Europe/London'); // Facepunch is on GMT time
 
 define('FACEPUNCH_URL', 'http://www.facepunch.com/'); // It's changed before!
 define('USERAGENT', 'FPAPI');
-define('DEBUG', true);
 
 class API
 {
@@ -12,6 +11,8 @@ class API
 	
 	private $module, $action, $parameters;
 	private $cachestore;
+	
+	private $response_time = 0;
 	
 	function __construct()
 	{
@@ -35,7 +36,7 @@ class API
 		
 		// Split the request
 		
-		$parts = explode('/', $_SERVER['QUERY_STRING']);
+		$parts = explode('/', urldecode($_SERVER['QUERY_STRING']));
 		
 		// Shift off the first value if it's blank or index.php
 		
@@ -115,15 +116,21 @@ class API
 		$action = array_shift($parts);
 		$params = $parts;
 		
-		$this->module = $module;
-		$this->action = $action;
-		$this->parameters = $params;
-		
 		// Check param counts
 		
 		$info = get_function_info($module, $action);
 		
 		$req_args = count($info['required_parameters']);
+		
+		// Push in POST data matching the required_fields
+		
+		foreach($info['required_parameters'] as $required_param)
+		{
+			if(isset($_POST[$required_param]))
+			{
+				$params[] = $_POST[$required_param];
+			}
+		}
 		
 		if(count($params) < $req_args)
 		{
@@ -132,6 +139,10 @@ class API
 			$missing_params = array_slice($info['required_parameters'], count($params));
 			$this->error('Missing ' . hr_implode($missing_param_names) . ' parameter' . (count($missing_param_names) == 1 ? '' : 's') . '.');
 		}
+		
+		$this->module = $module;
+		$this->action = $action;
+		$this->parameters = $params;
 		
 		// Let's go!
 		
@@ -198,8 +209,14 @@ class API
 		
 		if(DEBUG)
 		{
+			$time_taken = microtime(true) - $start_time;
+			$response_time = $this->response_time;
+			$processing_time = $time_taken - $response_time;
+			
 			$json['stats'] = array(
-				'time_taken' => number_format(microtime(true) - $start_time, 10),
+				'time_taken' => number_format($time_taken, 10),
+				'response_time' => number_format($response_time, 10),
+				'processing_time' => number_format($processing_time, 10),
 				'memory_usage' => bcdiv(memory_get_peak_usage(), 1048576, 2) . ' MB'
 			);
 		
@@ -258,9 +275,11 @@ class API
 		$headers['User-Agent'] = USERAGENT;
 		$headers['X-Forwarded-For'] = $_SERVER['REMOTE_ADDR'];
 		
-		$url = substr($url, 0, 1) == '/' ? substr($url, 1) : $url; // Strip off any slash from the beginning
+		$url = ltrim($url, '/'); // Strip off any slash from the beginning
 		
+		$t = microtime(true);
 		$req = request(FACEPUNCH_URL . $url, $data, $method, $headers, $returnheaders, $this->auth->_get_cookies());
+		$this->response_time += microtime(true) - $t;
 		
 		// Check if there was an error with the request
 		
@@ -282,7 +301,7 @@ class API
 			// Login error
 			$error = str_replace(' Forgotten your password? Click here!', '', $error);
 			
-			$this->error($error);
+			$this->error(trim($error));
 		}
 		
 		return $req;

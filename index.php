@@ -1,6 +1,11 @@
 <?php
 
-ini_set('display_errors', 1);
+define('DEBUG', true);
+
+if(DEBUG)
+{
+	ini_set('display_errors', 1);
+}
 
 $start_time = microtime(true);
 

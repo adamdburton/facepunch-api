@@ -6,9 +6,10 @@ class Thread extends Module
 	protected $dependencies = array('forum');
 	
 	/**
-		Gets a Thread by ID
-		id | required | integer | get | Thread ID
-		page | optional | integer | get | Page number
+		Description: Gets a Thread by ID
+		Parameter: id | required | integer | get | Thread ID
+		Parameter: page | optional | integer | get | Page number
+		Return: thread | object | Thread with array of posts
 	**/
 	public function id($id, $page = 1)
 	{
@@ -19,7 +20,7 @@ class Thread extends Module
 		
 		$ret = $this->api->request('showthread.php', $data);
 		
-		return parse_thread($ret);
+		return array('thread' => parse_thread($ret));
 	}
 	
 	/**
@@ -31,12 +32,7 @@ class Thread extends Module
 	**/
 	public function reply($id, $subscribe = false)
 	{
-		$message = isset($_POST['message']) ? $_POST['meesage'] : false;
-		
-		if(!$message || strlen($message) < 1)
-		{
-			$this->api->error('Missing message body.');
-		}
+		$message = $_POST['message'];
 		
 		$data = array(
 			'message' => $message,
@@ -46,7 +42,7 @@ class Thread extends Module
 			'parseurl' => 1
 		);
 		
-		array_merge($data, $this->_get_security_data($id));
+		$data = array_merge($data, $this->_get_security_data($id));
 		
 		$ret = $this->api->request('newreply.php?do=postreply&t=' . $id, $data, 'POST');
 		
@@ -161,9 +157,12 @@ function parse_thread($str)
 	
 	if($pagination)
 	{
+		$first_last = $pagination->find('span.first_last a', -1);
+		$selected = $pagination->find('span.selected a', 0);
+		
 		$thread['pages'] = array(
-			'current' => (int) $pagination->find('span.selected a', 0)->plaintext,
-			'total' => (int) quick_match('page=(\d+)', $pagination->find('span.first_last a', -1)->href)
+			'current' => (int) $selected->plaintext,
+			'total' => (int) ($first_last && $first_last->rel != 'start' ? (int) quick_match('page=(\d+)', $first_last->href) : $selected->plaintext)
 		);
 	}
 	else
@@ -247,6 +246,42 @@ function parse_posts($str)
 		$post['content'] = trim($post_row->find('blockquote', 0)->innertext);
 		
 		// Ratings
+		
+		// Rate
+		
+		$postrating_div = $post_row->find('div.postrating', 0);
+		
+		if($postrating_div)
+		{
+			$rates = array();
+			
+			foreach($postrating_div->find('a') as $post_rating_a)
+			{
+				if($post_rating_a->onclick)
+				{
+					$onclick = $post_rating_a->onclick;
+					
+					//echo $onclick;
+				
+					$rating_id = (int) quick_match('\, \'(\d+)\'\,', $onclick);
+					$rating_key = quick_match('\, \'([a-z0-9]+)\' \)', $onclick);
+				
+					$rating_img = $post_rating_a->find('img', 0);
+				
+					$image_url = $rating_img->src;
+					$title = $rating_img->alt;
+				
+					$rates[] = array(
+						'title' => $title,
+						'image_url' => $image_url,
+						'rating_id' => $rating_id,
+						'rating_key' => $rating_key
+					);
+				}
+			}
+			
+			$post['rate'] = $rates;
+		}
 		
 		$posts[] = $post;
 	}
