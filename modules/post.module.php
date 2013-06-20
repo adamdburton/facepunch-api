@@ -2,6 +2,7 @@
 
 class Post extends Module
 {
+	protected $description = 'Get posts';
 	protected $dependencies = array('thread');
 	
 	/**

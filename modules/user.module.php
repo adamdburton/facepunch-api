@@ -2,6 +2,8 @@
 
 class User extends Module
 {
+	protected $description = 'Get user information and send profile messages';
+	
 	/**
 		Gets a User by ID
 		id | required | integer | get | Facepunch User ID

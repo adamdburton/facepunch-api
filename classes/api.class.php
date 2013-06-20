@@ -123,14 +123,14 @@ class API
 		
 		$info = get_function_info($module, $action);
 		
-		$req_args = count($info['required_arguments']);
+		$req_args = count($info['required_parameters']);
 		
 		if(count($params) < $req_args)
 		{
-			$missing_arg_names = array_map(function($v) { return $v['name']; }, $info['required_arguments']);
+			$missing_param_names = array_map(function($v) { return $v['name']; }, $info['required_parameters']);
 			
-			$missing_params = array_slice($info['required_arguments'], count($params));
-			$this->error('Missing ' . hr_implode($missing_arg_names) . ' parameter' . (count($missing_arg_names) == 1 ? '' : 's') . '.');
+			$missing_params = array_slice($info['required_parameters'], count($params));
+			$this->error('Missing ' . hr_implode($missing_param_names) . ' parameter' . (count($missing_param_names) == 1 ? '' : 's') . '.');
 		}
 		
 		// Let's go!
@@ -316,38 +316,49 @@ class API
 
 function get_function_info($object, $function)
 {
-	$result = array();
-	
 	$reflection = new ReflectionMethod($object, $function);
 	
 	$comment = trim(substr($reflection->getDocComment(), 4, -4));
 	
-	//$comment = str_replace("/** ", "", str_replace(" */", "", $reflection->getDocComment()));
+	$description = quick_match('([A-Za-z0-9., ]+)', $comment);
 	
-	$opt_arg_names = array();
-	$req_arg_names = array();
+	$parameters = array();
 	
-	foreach($reflection->getParameters() as $param)
+	$req_param_names = array();
+	$opt_param_names = array();
+	
+	if(preg_match_all('/([a-z_]+) \| (required|optional) \| (string|integer) \| (get|post) \| ([A-Za-z0-9., ]+)/', $comment, $matches, PREG_SET_ORDER))
 	{
-		$name = $param->getName();
-		
-		if($param->isOptional())
+		foreach($matches as $match)
 		{
-			$default = (is_bool($param->getDefaultValue()) ? ($param->getDefaultValue() ? 'true' : 'false') : $param->getDefaultValue());
-			$opt_arg_names[] = array('name' => $name, 'default' => $default);
-		}
-		else
-		{
-			$req_arg_names[] = array('name' => $name);
+			$parameters[] = array(
+				'name' => $match[1],
+				'required' => $match[2] == 'required' ? true : false,
+				'type' => $match[3],
+				'method' => $match[4],
+				'description' => $match[5]
+			);
+			
+			if($match[2] == 'required')
+			{
+				$req_param_names[] = $match[1];
+			}
+			else
+			{
+				$opt_param_names[] = $match[1];
+			}
 		}
 	}
 	
-	$result['name'] = $function;
-	$result['required_arguments'] = $req_arg_names;
-	$result['optional_arguments'] = $opt_arg_names;
-	$result['comment'] = $comment;
+	$return = array(
+		'name' => $function,
+		'description' => $description,
+		'parameters' => $parameters,
+		'required_parameters' => $req_param_names,
+		'optional_parameters' => $opt_param_names,
+	);
 	
-	return $result;
+	return $return;
 }
 
 function request($url, $fields = array(), $method = 'GET', $headers = array(), $returnheaders = false, $cookies = '')

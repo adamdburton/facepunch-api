@@ -2,6 +2,7 @@
 
 class Thread extends Module
 {
+	protected $description = 'Get and reply to threads';
 	protected $dependencies = array('forum');
 	
 	/**

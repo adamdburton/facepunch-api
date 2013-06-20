@@ -2,6 +2,7 @@
 
 class PM extends Module
 {
+	protected $description = 'Get and send PMs';
 	protected $dependencies = array('thread');
 	
 	/**

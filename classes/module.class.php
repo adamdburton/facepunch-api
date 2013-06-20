@@ -2,6 +2,7 @@
 
 class Module
 {
+	protected $description = '';
 	protected $requires_session = true;
 	protected $dependencies = array();
 	
@@ -27,6 +28,11 @@ class Module
 				$this->api->load_module($dependency);
 			}
 		}
+	}
+	
+	public function _description()
+	{
+		return $this->description;
 	}
 	
 	public function _requires_session()

@@ -2,6 +2,8 @@
 
 class Forum extends Module
 {
+	protected $description = 'Get forums or threads from a forum';
+	
 	/**
 		Gets all top level forums
 	**/

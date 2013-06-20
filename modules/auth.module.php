@@ -2,12 +2,13 @@
 
 class Auth extends Module
 {
+	protected $description = 'Authenticate';
 	protected $requires_session = false;
 	
 	private $session_id = false;
 	
 	/**
-		Authenticate with Facepunch
+		Authenticate with username and password
 		username | required | string | get | Facepunch username
 		password | required | string | get | Facepunch password MD5 hash
 	**/
@@ -49,7 +50,7 @@ class Auth extends Module
 	}
 	
 	/**
-		Authenticate with Facepunch
+		Authenticate with cookies
 		bb_userid | required | string | get | Facepunch User ID
 		bb_password | required | string | get | Facepunch password MD5 hash
 		bb_sessionhash | required | string | get | Facepunch session hash

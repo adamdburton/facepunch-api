@@ -12,6 +12,10 @@
 				padding: 10px;
 			}
 			
+			#container {
+				width: 960px;
+			}
+			
 			.module {
 				color: #999999;
 				border-bottom: 1px solid #DDD;
@@ -39,11 +43,17 @@
 			
 			.module.open > a {
 				color: #000;
-				margin-bottom: 10px;
+				margin-bottom: 20px;
+			}
+			
+			.module span {
+				float: right;
+				color: #999999;
 			}
 			
 			.module_actions {
 				display: none;
+				padding: 0 10px;
 			}
 			
 			.action {
@@ -51,35 +61,56 @@
 				border: 1px solid #c3d9ec;
 				border-radius: 4px;
 				padding: 10px;
-				margin-bottom: 10px;
+				margin-bottom: 20px;
 			}
 			
 			.action > a {
 				color: #999999;
 				text-decoration: none;
+				display: block;
 			}
 			
 			.action > a:hover, .action.open > a {
 				color: #000;
 			}
 			
+			.action.open > a {
+				margin-bottom: 10px;
+			}
+			
 			.action span {
 				float: right;
+				color: #999999;
 			}
 			
 			.action_parameters {
 				display: none;
+				width: 100%;
+			}
+			
+			.action_parameters td, .action_parameters th {
+				padding: 10px;
+			}
+			
+			.action_parameters th {
+				text-align: left;
+				font-weight: normal;
+				border-bottom: 1px solid #999;
+				color: #666;
 			}
 		</style>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+		<script src="//rawgithub.com/adammark/Markup.js/master/src/markup.min.js"></script>
 		<script>
-			$('.module > a').live('click', function()
+			$('.module > a').live('click', function(e)
 			{
+				e.preventDefault();
 				$(this).parent().toggleClass('open').find('.module_actions').toggle();
 			});
 			
-			$('.action > a').live('click', function()
+			$('.action > a').live('click', function(e)
 			{
+				e.preventDefault();
 				$(this).parent().toggleClass('open').find('.action_parameters').toggle();
 			});
 			
@@ -98,58 +129,51 @@
 		
 			$.getJSON('/v1/meta/documentation', function(data)
 			{
-				$.each(data.success, function()
-				{
-					var $module = $($.nano($('#module'), this));
-					
-					$.each(this.actions, function()
-					{
-						var $action = $($.nano($('#action'), this));
-						
-						$.each(this.required_arguments, function()
-						{
-							var $required_argument = $($.nano($('#argument'), this));
-							
-							$action.find('.action_parameters').append($required_argument);
-						});
-						
-						$.each(this.optional_arguments, function()
-						{
-							var $optional_argument = $($.nano($('#argument'), this));
-							
-							$action.find('.action_parameters').append($optional_argument);
-						});
-						
-						$module.find('.module_actions').append($action);
-					});
-					
-					$(document.body).append($module);
-				});
+				var output = Mark.up($('#template').contents().text(), { modules: data.success });
+				$('#container').append(output);
 			});
 		</script>
 	</head>
 	<body>
-		
+		<div id="container">
+			
+		</div>
 	</body>
 	
-	<script type="text/html" id="module">
-		<div class="module">
-			<a href="#">/ {name}</a>
-			<div class="module_actions"></div>
-		</div>
-	</script>
-	
-	<script type="text/html" id="action">
-		<div class="action">
-			<a href="#">{name} <span>{comment}</span></a>
-			<div class="action_parameters"></div>
-		</div>
-	</script>
-	
-	<script type="text/html" id="argument">
-		<div class="parameter">
-			- {name}
-		</div>
+	<script type="text/html" id="template">
+		{{modules}}
+			{{name|set>module_name}}
+			<div class="module">
+				<a href="#">/{{name}} <span>{{description|downcase}}</span></a>
+				<div class="module_actions">
+				{{actions}}
+					{{name|set>action_name}}
+					<div class="action">
+						<a href="#">/{{module_name}}/{{name}} <span>{{description|downcase}}</span></a>
+						<table class="action_parameters">
+							<tr>
+								<th>Parameter</th>
+								<th>Required</th>
+								<th>Type</th>
+								<th>Method</th>
+								<th>Description</th>
+							</tr>
+							{{parameters}}
+								{{name|set>parameter_name}}
+								<tr class="parameter">
+									<td>{{name}}</td>
+									<td>{{required|choose>Yes>No}}</td>
+									<td>{{type|capcase}}</td>
+									<td>{{method|upcase}}</td>
+									<td>{{description}}</td>
+								</tr>
+							{{/parameters}}
+						</table>
+					</div>
+				{{/actions}}
+				</div>
+			</div>
+		{{/modules}}
 	</script>
 	
 </html>

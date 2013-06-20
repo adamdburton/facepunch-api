@@ -2,10 +2,11 @@
 
 class Meta extends Module
 {
+	protected $description = 'Get API information';
 	protected $requires_session = false;
 	
 	/**
-		Output api documentation
+		Get API documentation
 	**/
 	function documentation()
 	{
@@ -17,6 +18,7 @@ class Meta extends Module
 			
 			$module_meta = array(
 				'name' => $module_name,
+				'description' => $module->_description(),
 				'requires_session' => $module->_requires_session(),
 				'dependencies' => $module->_dependencies()
 			);
@@ -27,11 +29,11 @@ class Meta extends Module
 			{
 				if(substr($method, 0, 1) != '_')
 				{
-					$module_meta['actions'][$method] = get_function_info($module, $method);
+					$module_meta['actions'][] = get_function_info($module, $method);
 				}
 			}
 			
-			$modules[$module_name] = $module_meta;
+			$modules[] = $module_meta;
 		}
 		
 		return $modules;
