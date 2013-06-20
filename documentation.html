@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Facepunch API Docs</title>
+		<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700" />
+		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/2.1.0/normalize.css" />
+		<style>
+			body {
+				font-family: 'Montserrat';
+				font-size: 14px;
+			}
+			
+			.module {
+				
+			}
+			
+			.action {
+				
+			}
+		</style>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+		<script>
+			(function($) {
+				var _regex = /\{([\w\.]*)\}/g;
+				$.nano = function(template, data)
+				{
+					return template.contents().text().replace(_regex, function(str, key)
+					{
+						var keys = key.split('.'), value = data[keys.shift()];
+						$.each(keys, function() { value = value[this]; });
+						return (value === null || value === undefined) ? '' : value;
+					});
+				};
+			}(jQuery));
+		
+			$.getJSON('/v1/meta/documentation', function(data)
+			{
+				$.each(data.success, function()
+				{
+					var $module = $($.nano($('#module'), this));
+					
+					$.each(this.actions, function()
+					{
+						$module.append($.nano($('#action'), this));
+					});
+					
+					$(document.body).append($module);
+				});
+			});
+		</script>
+	</head>
+	<body>
+		
+	</body>
+	
+	<script type="text/html" id="module">
+		<div class="module">
+			{name}
+		</div>
+	</script>
+	
+	<script type="text/html" id="action">
+		<div class="action">
+			- {name}
+		</div>
+	</script>
+	
+</html>

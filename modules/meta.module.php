@@ -13,6 +13,7 @@ class Meta extends Module
 			$module = $this->api->load_module($module_name);
 			
 			$module_meta = array(
+				'name' => $module_name,
 				'requires_session' => $module->_requires_session(),
 				'dependencies' => $module->_dependencies()
 			);
