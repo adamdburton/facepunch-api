@@ -8,18 +8,81 @@
 			body {
 				font-family: 'Montserrat';
 				font-size: 14px;
+				margin: 0;
+				padding: 10px;
 			}
 			
 			.module {
-				
+				color: #999999;
+				border-bottom: 1px solid #DDD;
+				padding: 10px 0;
+			}
+			
+			.module:last-child {
+				border: 0;
+			}
+			
+			.module.open {
+				padding-bottom: 0;
+			}
+			
+			.module > a {
+				color: #999999;
+				text-decoration: none;
+				font-size: 18px;
+				display: block;
+			}
+			
+			.module > a:hover {
+				color: #000;
+			}
+			
+			.module.open > a {
+				color: #000;
+				margin-bottom: 10px;
+			}
+			
+			.module_actions {
+				display: none;
 			}
 			
 			.action {
-				
+				background: #E7F0F7;
+				border: 1px solid #c3d9ec;
+				border-radius: 4px;
+				padding: 10px;
+				margin-bottom: 10px;
+			}
+			
+			.action > a {
+				color: #999999;
+				text-decoration: none;
+			}
+			
+			.action > a:hover, .action.open > a {
+				color: #000;
+			}
+			
+			.action span {
+				float: right;
+			}
+			
+			.action_parameters {
+				display: none;
 			}
 		</style>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 		<script>
+			$('.module > a').live('click', function()
+			{
+				$(this).parent().toggleClass('open').find('.module_actions').toggle();
+			});
+			
+			$('.action > a').live('click', function()
+			{
+				$(this).parent().toggleClass('open').find('.action_parameters').toggle();
+			});
+			
 			(function($) {
 				var _regex = /\{([\w\.]*)\}/g;
 				$.nano = function(template, data)
@@ -41,7 +104,23 @@
 					
 					$.each(this.actions, function()
 					{
-						$module.append($.nano($('#action'), this));
+						var $action = $($.nano($('#action'), this));
+						
+						$.each(this.required_arguments, function()
+						{
+							var $required_argument = $($.nano($('#argument'), this));
+							
+							$action.find('.action_parameters').append($required_argument);
+						});
+						
+						$.each(this.optional_arguments, function()
+						{
+							var $optional_argument = $($.nano($('#argument'), this));
+							
+							$action.find('.action_parameters').append($optional_argument);
+						});
+						
+						$module.find('.module_actions').append($action);
 					});
 					
 					$(document.body).append($module);
@@ -55,12 +134,20 @@
 	
 	<script type="text/html" id="module">
 		<div class="module">
-			{name}
+			<a href="#">/ {name}</a>
+			<div class="module_actions"></div>
 		</div>
 	</script>
 	
 	<script type="text/html" id="action">
 		<div class="action">
+			<a href="#">{name} <span>{comment}</span></a>
+			<div class="action_parameters"></div>
+		</div>
+	</script>
+	
+	<script type="text/html" id="argument">
+		<div class="parameter">
 			- {name}
 		</div>
 	</script>

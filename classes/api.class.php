@@ -320,7 +320,8 @@ function get_function_info($object, $function)
 	
 	$reflection = new ReflectionMethod($object, $function);
 	
-	$comment = substr($reflection->getDocComment(), 4, -4);
+	$comment = trim(substr($reflection->getDocComment(), 4, -4));
+	
 	//$comment = str_replace("/** ", "", str_replace(" */", "", $reflection->getDocComment()));
 	
 	$opt_arg_names = array();

@@ -4,6 +4,10 @@ class PM extends Module
 {
 	protected $dependencies = array('thread');
 	
+	/**
+		Gets a Personal Message by ID
+		id | required | integer | get | PM ID
+	**/
 	public function id($id)
 	{
 		$data = array(
@@ -16,6 +20,9 @@ class PM extends Module
 		return parse_pm($ret);
 	}
 	
+	/**
+		Gets Personal Messages folders
+	**/
 	public function folders()
 	{
 		$ret = $this->api->request('private.php');
@@ -23,6 +30,10 @@ class PM extends Module
 		return parse_pm_folders($ret, false);
 	}
 	
+	/**
+		Gets Personal Messages from a folder
+		id | required | integer | get | Folder ID
+	**/
 	public function folder($id)
 	{
 		$data = array(
@@ -34,6 +45,11 @@ class PM extends Module
 		return parse_pms($ret);
 	}
 	
+	/**
+		Send a Personal Message to a user
+		user_id | required | integer | get | Facepunch User ID
+		message | required | string | post | The message to submit
+	**/
 	public function send($user_id)
 	{
 		// TODO: This

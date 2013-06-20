@@ -2,6 +2,9 @@
 
 class Forum extends Module
 {
+	/**
+		Gets all top level forums
+	**/
 	public function index()
 	{
 		$ret = $this->api->request('forum.php');
@@ -9,6 +12,13 @@ class Forum extends Module
 		return parse_categories($ret);
 	}
 	
+	/**
+		Gets threads from a Forum
+		id | required | integer | get | Forum ID
+		page | optional | integer | get | Page number
+		sort | optional | string | get | Sorting of returned threads: title, postusername, lastpost, replycount, views
+		order | optional | string | get | Ordering of returned threads: acc, desc
+	**/
 	public function id($id, $page = 1, $sort = 'lastpost', $order = 'desc')
 	{
 		$data = array(

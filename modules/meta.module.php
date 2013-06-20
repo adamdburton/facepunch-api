@@ -4,6 +4,9 @@ class Meta extends Module
 {
 	protected $requires_session = false;
 	
+	/**
+		Output api documentation
+	**/
 	function documentation()
 	{
 		$modules = array();

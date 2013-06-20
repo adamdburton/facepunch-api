@@ -2,6 +2,10 @@
 
 class User extends Module
 {
+	/**
+		Gets a User by ID
+		id | required | integer | get | Facepunch User ID
+	**/
 	public function id($id)
 	{
 		$data = array(
@@ -13,6 +17,10 @@ class User extends Module
 		return parse_user($ret);
 	}
 	
+	/**
+		Gets a User by Username
+		username | required | string | get | Facepunch Username
+	**/
 	public function username($username)
 	{
 		$data = array(
@@ -24,7 +32,12 @@ class User extends Module
 		return parse_user($ret);
 	}
 	
-	public function message($user_id)
+	/**
+		Adds a visitor message to a user profile
+		id | required | integer | get | Facepunch User ID
+		message | required | string | post | The message to submit
+	**/
+	public function message($id)
 	{
 		$message = $_POST['message'];
 		

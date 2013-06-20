@@ -4,6 +4,11 @@ class Thread extends Module
 {
 	protected $dependencies = array('forum');
 	
+	/**
+		Gets a Thread by ID
+		id | required | integer | get | Thread ID
+		page | optional | integer | get | Page number
+	**/
 	public function id($id, $page = 1)
 	{
 		$data = array(
@@ -16,6 +21,12 @@ class Thread extends Module
 		return parse_thread($ret);
 	}
 	
+	/**
+		Reply to a Thread
+		id | required | integer | get | Thread ID
+		subscribe | optional | integer | get | Whether to subscribe to the thread
+		message | required | string | post | The message to submit
+	**/
 	public function reply($id, $subscribe = false)
 	{
 		$message = isset($_POST['message']) ? $_POST['meesage'] : false;
@@ -40,6 +51,10 @@ class Thread extends Module
 		return true;
 	}
 	
+	/**
+		Gets whether the user is subscribed to a thread
+		id | required | integer | get | Thread ID
+	**/
 	public function is_subscribed($id)
 	{
 		$subscribed_threads = $this->subscribed('all');
@@ -55,6 +70,9 @@ class Thread extends Module
 		return false;
 	}
 	
+	/**
+		Gets read threads
+	**/
 	public function read()
 	{
 		$ret = $this->api->request('fp_read.php');
@@ -62,6 +80,9 @@ class Thread extends Module
 		return parse_threads($ret, false);
 	}
 	
+	/**
+		Gets popular threads
+	**/
 	public function popular()
 	{
 		$ret = $this->api->request('fp_popular.php');
@@ -69,6 +90,10 @@ class Thread extends Module
 		return parse_threads($ret, false);
 	}
 	
+	/**
+		Gets subscribed threads
+		folder_id | optional | integer | get | Subscriptions Folder ID
+	**/
 	public function subscribed($folder_id = 0)
 	{
 		$data = array(

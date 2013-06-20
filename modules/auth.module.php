@@ -6,6 +6,11 @@ class Auth extends Module
 	
 	private $session_id = false;
 	
+	/**
+		Authenticate with Facepunch
+		username | required | string | get | Facepunch username
+		password | required | string | get | Facepunch password MD5 hash
+	**/
 	public function login($username, $password)
 	{
 		$data = array(
@@ -43,6 +48,12 @@ class Auth extends Module
 		}
 	}
 	
+	/**
+		Authenticate with Facepunch
+		bb_userid | required | string | get | Facepunch User ID
+		bb_password | required | string | get | Facepunch password MD5 hash
+		bb_sessionhash | required | string | get | Facepunch session hash
+	**/
 	public function cookie_login($bb_userid, $bb_password, $bb_sessionhash)
 	{
 		$cookies = 'bb_user=' . $bb_userid . ';bb_password=' . $bb_password . ';bb_sessionhash=' . $bb_sessionhash;
