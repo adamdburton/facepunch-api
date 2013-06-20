@@ -220,7 +220,7 @@ class API
 		
 		foreach(glob('./modules/*.module.php') as $file)
 		{
-			$modules[] = basename($file, ".module.php");
+			$modules[] = basename($file, '.module.php');
 		}
 		
 		return $modules;
@@ -257,7 +257,7 @@ class API
 	function request($url, $data = array(), $method = 'GET', $headers = array(), $returnheaders = false)
 	{
 		$headers['User-Agent'] = USERAGENT;
-		$headers['X-Forwarded-For'] = $_SERVER["REMOTE_ADDR"];
+		$headers['X-Forwarded-For'] = $_SERVER['REMOTE_ADDR'];
 		
 		$url = substr($url, 0, 1) == '/' ? substr($url, 1) : $url; // Strip off any slash from the beginning
 		
@@ -275,8 +275,13 @@ class API
 		if(strstr($req, 'standard_error') && !strstr($req, '<p class="blockrow restore">'))
 		{
 			$html = str_get_html($req);
-			$error = $html->find('div.standard_error', 0);
-			$error = str_replace(' If you followed a valid link, please notify the administrator', '', $error->find('div.blockrow', 0)->plaintext);
+			$error = $html->find('div.standard_error', 0)->find('div.blockrow', 0)->plaintext;
+			
+			// Invalid forum/thread error
+			$error = str_replace(' If you followed a valid link, please notify the administrator', '', $error);
+			
+			// Login error
+			$error = str_replace(' Forgotten your password? Click here!', '', $error);
 			
 			$this->error($error);
 		}
