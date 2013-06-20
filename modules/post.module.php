@@ -6,8 +6,10 @@ class Post extends Module
 	protected $dependencies = array('thread');
 	
 	/**
-		Gets a Post by ID
-		id | required | integer | get | Post ID
+		Description: Gets a Post by ID
+		Parameter: id | required | integer | get | Post ID
+		Return: thread | object | Thread
+		Return: post | object | Post
 	**/
 	public function id($id)
 	{

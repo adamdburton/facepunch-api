@@ -23,10 +23,11 @@ class Thread extends Module
 	}
 	
 	/**
-		Reply to a Thread
-		id | required | integer | get | Thread ID
-		subscribe | optional | integer | get | Whether to subscribe to the thread
-		message | required | string | post | The message to submit
+		Description: Reply to a Thread
+		Parameter: id | required | integer | get | Thread ID
+		Parameter: subscribe | optional | integer | get | Whether to subscribe to the thread
+		Parameter: message | required | string | post | The message to submit
+		Return: sent | boolean | Reply sent or failed
 	**/
 	public function reply($id, $subscribe = false)
 	{
@@ -53,8 +54,9 @@ class Thread extends Module
 	}
 	
 	/**
-		Gets whether the user is subscribed to a thread
-		id | required | integer | get | Thread ID
+		Description: Gets whether the user is subscribed to a thread
+		Parameter: id | required | integer | get | Thread ID
+		Return: subscribed | boolean | User subscribed or not
 	**/
 	public function is_subscribed($id)
 	{
@@ -64,36 +66,39 @@ class Thread extends Module
 		{
 			if($thread['thread_id'] == $id)
 			{
-				return true;
+				return array('subscribed' => true);
 			}
 		}
 		
-		return false;
+		return array('subscribed' => false);
 	}
 	
 	/**
-		Gets read threads
+		Description: Gets read threads
+		Return: threads | array | Array of threads
 	**/
 	public function read()
 	{
 		$ret = $this->api->request('fp_read.php');
 		
-		return parse_threads($ret, false);
+		return array('threads' => parse_threads($ret, false));
 	}
 	
 	/**
-		Gets popular threads
+		Description: Gets popular threads
+		Return: threads | array | Array of threads
 	**/
 	public function popular()
 	{
 		$ret = $this->api->request('fp_popular.php');
 		
-		return parse_threads($ret, false);
+		return array('threads' => parse_threads($ret, false));
 	}
 	
 	/**
-		Gets subscribed threads
-		folder_id | optional | integer | get | Subscriptions Folder ID
+		Description: Gets subscribed threads
+		Parameter: folder_id | optional | integer | get | Subscriptions Folder ID
+		Return: threads | array | Array of threads
 	**/
 	public function subscribed($folder_id = 0)
 	{
@@ -103,7 +108,7 @@ class Thread extends Module
 		
 		$ret = $this->api->request('subscription.php');
 		
-		return parse_threads($ret, false);
+		return array('threads' => parse_threads($ret, false));
 	}
 	
 	public function _get_security_data($thread_id)

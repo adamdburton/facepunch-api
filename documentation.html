@@ -53,7 +53,6 @@
 			
 			.module_actions {
 				display: none;
-				padding: 0 10px;
 			}
 			
 			.action {
@@ -75,7 +74,7 @@
 			}
 			
 			.action.open > a {
-				margin-bottom: 10px;
+				margin-bottom: 20px;
 			}
 			
 			.action span {
@@ -83,9 +82,31 @@
 				color: #999999;
 			}
 			
-			.action_parameters {
-				display: none;
+			.action form {
+				margin-bottom: 20px;
+			}
+			
+			.action form input[type="text"] {
 				width: 100%;
+			}
+			
+			.action_info {
+				display: none;
+			}
+			
+			.action_info h2 {
+				font-size: 16px;
+				margin: 0 0 10px;
+				color: #000;
+			}
+			
+			.action_parameters {
+				width: 100%;
+				margin-bottom: 20px;
+			}
+			
+			.action_parameters:last-child {
+				margin-bottom: 0;
 			}
 			
 			.action_parameters td, .action_parameters th {
@@ -111,26 +132,20 @@
 			$('.action > a').live('click', function(e)
 			{
 				e.preventDefault();
-				$(this).parent().toggleClass('open').find('.action_parameters').toggle();
+				$(this).parent().toggleClass('open').find('.action_info').toggle();
 			});
-			
-			(function($) {
-				var _regex = /\{([\w\.]*)\}/g;
-				$.nano = function(template, data)
-				{
-					return template.contents().text().replace(_regex, function(str, key)
-					{
-						var keys = key.split('.'), value = data[keys.shift()];
-						$.each(keys, function() { value = value[this]; });
-						return (value === null || value === undefined) ? '' : value;
-					});
-				};
-			}(jQuery));
 		
 			$.getJSON('/v1/meta/documentation', function(data)
 			{
-				var output = Mark.up($('#template').contents().text(), { modules: data.success });
-				$('#container').append(output);
+				if(data.success)
+				{
+					var output = Mark.up($('#template').contents().text(), { modules: data.success.modules });
+					$('#container').append(output);
+				}
+				else
+				{
+					$('#container').append('Couldn\'t connect to /v1/meta/documentation!');
+				}
 			});
 		</script>
 	</head>
@@ -146,29 +161,62 @@
 			<div class="module">
 				<a href="#">/{{name}} <span>{{description|downcase}}</span></a>
 				<div class="module_actions">
+				<strong>Requires Session:</strong> {{requires_session|choose>Yes>No}}<br /><br />
+				
 				{{actions}}
 					{{name|set>action_name}}
 					<div class="action">
 						<a href="#">/{{module_name}}/{{name}} <span>{{description|downcase}}</span></a>
-						<table class="action_parameters">
-							<tr>
-								<th>Parameter</th>
-								<th>Required</th>
-								<th>Type</th>
-								<th>Method</th>
-								<th>Description</th>
-							</tr>
-							{{parameters}}
-								{{name|set>parameter_name}}
-								<tr class="parameter">
-									<td>{{name}}</td>
-									<td>{{required|choose>Yes>No}}</td>
-									<td>{{type|capcase}}</td>
-									<td>{{method|upcase}}</td>
-									<td>{{description}}</td>
-								</tr>
-							{{/parameters}}
-						</table>
+						
+						<div class="action_info">
+							{{if parameters}}
+								<form action="/v1/{{module_name}}/{{name}}">
+									<h2>Parameters</h2>
+							
+									<table class="action_parameters">
+										<tr>
+											<th style="width: 15%;">Parameter</th>
+											<th style="width: 15%;">Value</th>
+											<th style="width: 10%;">Required</th>
+											<th style="width: 10%;">Type</th>
+											<th style="width: 10%;">Method</th>
+											<th>Description</th>
+										</tr>
+										{{parameters}}
+											<tr class="parameter">
+												<td>{{name}}</td>
+												<td><input type="text" name="{{name}}" {{if required|truthy}}required{{/if}} /></td>
+												<td>{{required|choose>Yes>No}}</td>
+												<td>{{type|capcase}}</td>
+												<td>{{method|upcase}}</td>
+												<td>{{description}}</td>
+											</tr>
+										{{/parameters}}
+									</table>
+								
+									<input type="submit" value="Submit" />
+								</form>
+							{{/if}}
+						
+							{{if returns}}
+								<h2>Return Values</h2>
+							
+								<table class="action_parameters">
+									<tr>
+										<th style="width: 15%;">Parameter</th>
+										<th style="width: 30%;">Type</th>
+										<th>Description</th>
+									</tr>
+									{{returns}}
+										<tr class="parameter">
+											<td>{{name}}</td>
+											<td>{{type|capcase}}</td>
+											<td>{{description}}</td>
+										</tr>
+									{{/returns}}
+								</table>
+							{{/if}}
+						</div>
 					</div>
 				{{/actions}}
 				</div>

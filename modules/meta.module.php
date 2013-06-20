@@ -6,7 +6,8 @@ class Meta extends Module
 	protected $requires_session = false;
 	
 	/**
-		Get API documentation
+		Description: Get API documentation
+		Return: modules | array | Array of API modules and actions documentation
 	**/
 	function documentation()
 	{
@@ -20,7 +21,7 @@ class Meta extends Module
 				'name' => $module_name,
 				'description' => $module->_description(),
 				'requires_session' => $module->_requires_session(),
-				'dependencies' => $module->_dependencies()
+				//'dependencies' => $module->_dependencies()
 			);
 			
 			$module_meta['actions'] = array();
@@ -36,6 +37,6 @@ class Meta extends Module
 			$modules[] = $module_meta;
 		}
 		
-		return $modules;
+		return array('modules' => $modules);
 	}
 }

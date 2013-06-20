@@ -5,21 +5,24 @@ class Forum extends Module
 	protected $description = 'Get forums or threads from a forum';
 	
 	/**
-		Gets all top level forums
+		Description: Gets all top level forums
+		Return: forums | array | Array of forums
 	**/
 	public function index()
 	{
 		$ret = $this->api->request('forum.php');
 		
-		return parse_categories($ret);
+		return array('forums' => parse_categories($ret));
 	}
 	
 	/**
-		Gets threads from a Forum
-		id | required | integer | get | Forum ID
-		page | optional | integer | get | Page number
-		sort | optional | string | get | Sorting of returned threads: title, postusername, lastpost, replycount, views
-		order | optional | string | get | Ordering of returned threads: acc, desc
+		Description: Gets threads from a Forum
+		Parameter: id | required | integer | get | Forum ID
+		Parameter: page | optional | integer | get | Page number
+		Parameter: sort | optional | string | get | Sorting of returned threads: title, postusername, lastpost, replycount, views
+		Parameter: order | optional | string | get | Ordering of returned threads: acc, desc
+		Return: subforums | array | Array of subforums
+		Return: threads | array | Array of threads
 	**/
 	public function id($id, $page = 1, $sort = 'lastpost', $order = 'desc')
 	{

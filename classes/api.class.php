@@ -11,7 +11,7 @@ class API
 	private $api_version = 'v1';
 	
 	private $module, $action, $parameters;
-	private $cache;
+	private $cachestore;
 	
 	function __construct()
 	{
@@ -19,9 +19,9 @@ class API
 		
 		if(class_exists('Memcache'))
 		{
-			$this->cache = new Memcache();
+			$this->cachestore = new Memcache();
 			
-			if(!$this->cache->connect('localhost', 11211))
+			if(!$this->cachestore->connect('localhost', 11211))
 			{
 				$this->error('Memcache unavailable.');
 			}
@@ -30,7 +30,7 @@ class API
 		{
 			require_once('simplecache.class.php');
 			
-			$this->cache = new SimpleCache('./cache');
+			$this->cachestore = new SimpleCache('./cache');
 		}
 		
 		// Split the request
@@ -290,14 +290,14 @@ class API
 	
 	function cache($key, $value = null)
 	{
-		if($this->cache)
+		if($this->cachestore)
 		{
-			$val = $this->cache->get($key);
+			$val = $this->cachestore->get($key);
 		
 			if(!$val && isset($value) || $val && isset($value))
 			{
 				// Insert or update
-				$this->cache->set($key, $value);
+				$this->cachestore->set($key, $value);
 	
 				return true;
 			}
@@ -320,14 +320,15 @@ function get_function_info($object, $function)
 	
 	$comment = trim(substr($reflection->getDocComment(), 4, -4));
 	
-	$description = quick_match('([A-Za-z0-9., ]+)', $comment);
+	$description = quick_match('Description\: ([A-Za-z0-9., ]+)', $comment);
+	$return = quick_match('Return\: (.+)', $comment);
 	
 	$parameters = array();
 	
 	$req_param_names = array();
 	$opt_param_names = array();
 	
-	if(preg_match_all('/([a-z_]+) \| (required|optional) \| (string|integer) \| (get|post) \| ([A-Za-z0-9., ]+)/', $comment, $matches, PREG_SET_ORDER))
+	if(preg_match_all('/Parameter\: ([a-z_]+) \| (required|optional) \| (string|integer|array|object|boolean) \| (get|post) \| ([A-Za-z0-9., ]+)/', $comment, $matches, PREG_SET_ORDER))
 	{
 		foreach($matches as $match)
 		{
@@ -350,12 +351,27 @@ function get_function_info($object, $function)
 		}
 	}
 	
+	$returns = array();
+	
+	if(preg_match_all('/Return\: ([a-z_]+) \| (string|integer|array|object|boolean) \| ([A-Za-z0-9., ]+)/', $comment, $matches, PREG_SET_ORDER))
+	{
+		foreach($matches as $match)
+		{
+			$returns[] = array(
+				'name' => $match[1],
+				'type' => $match[2],
+				'description' => $match[3]
+			);
+		}
+	}
+	
 	$return = array(
 		'name' => $function,
 		'description' => $description,
 		'parameters' => $parameters,
 		'required_parameters' => $req_param_names,
 		'optional_parameters' => $opt_param_names,
+		'returns' => $returns
 	);
 	
 	return $return;

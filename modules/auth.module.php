@@ -8,9 +8,11 @@ class Auth extends Module
 	private $session_id = false;
 	
 	/**
-		Authenticate with username and password
-		username | required | string | get | Facepunch username
-		password | required | string | get | Facepunch password MD5 hash
+		Description: Authenticate with username and password
+		Parameter: username | required | string | get | Facepunch username
+		Parameter: password | required | string | get | Facepunch password MD5 hash
+		Return: session_id | string | Session ID to use for subsequent requests
+		Return: user_id | integer | The logged in user's ID
 	**/
 	public function login($username, $password)
 	{
@@ -50,14 +52,16 @@ class Auth extends Module
 	}
 	
 	/**
-		Authenticate with cookies
-		bb_userid | required | string | get | Facepunch User ID
-		bb_password | required | string | get | Facepunch password MD5 hash
-		bb_sessionhash | required | string | get | Facepunch session hash
+		Description: Authenticate with cookies
+		Parameter: userid | required | string | get | Facepunch User ID
+		Parameter: password | required | string | get | Facepunch password MD5 hash
+		Parameter: sessionhash | required | string | get | Facepunch session hash
+		Return: session_id | string | Session ID to use for subsequent requests
+		Return: user_id | integer | The logged in user's ID
 	**/
-	public function cookie_login($bb_userid, $bb_password, $bb_sessionhash)
+	public function cookie_login($userid, $password, $sessionhash)
 	{
-		$cookies = 'bb_user=' . $bb_userid . ';bb_password=' . $bb_password . ';bb_sessionhash=' . $bb_sessionhash;
+		$cookies = 'bb_user=' . $userid . ';bb_password=' . $password . ';bb_sessionhash=' . $sessionhash;
 		
 		$data = array(
 			'cookies' => $cookies,
@@ -72,7 +76,7 @@ class Auth extends Module
 		
 		if($this->_check_login())
 		{
-			return array('session_id' => $session_id, 'user_id' => $bb_userid);
+			return array('session_id' => $session_id, 'user_id' => $userid);
 		}
 		else
 		{

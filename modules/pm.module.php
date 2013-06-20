@@ -6,8 +6,9 @@ class PM extends Module
 	protected $dependencies = array('thread');
 	
 	/**
-		Gets a Personal Message by ID
-		id | required | integer | get | PM ID
+		Description: Gets a Personal Message by ID
+		Parameter: id | required | integer | get | PM ID
+		Return: pm | object | personal message
 	**/
 	public function id($id)
 	{
@@ -18,22 +19,24 @@ class PM extends Module
 		
 		$ret = $this->api->request('private.php', $data);
 		
-		return parse_pm($ret);
+		return array('pm' => parse_pm($ret));
 	}
 	
 	/**
-		Gets Personal Messages folders
+		Description: Gets Personal Messages folders
+		Return: folders | array | Array of folders
 	**/
 	public function folders()
 	{
 		$ret = $this->api->request('private.php');
 		
-		return parse_pm_folders($ret, false);
+		return array('folders' => parse_pm_folders($ret, false));
 	}
 	
 	/**
-		Gets Personal Messages from a folder
-		id | required | integer | get | Folder ID
+		Description: Gets Personal Messages from a folder
+		Parameter: id | required | integer | get | Folder ID
+		Return: pms | array | Array of personal messages
 	**/
 	public function folder($id)
 	{
@@ -43,13 +46,14 @@ class PM extends Module
 		
 		$ret = $this->api->request('private.php', $data);
 		
-		return parse_pms($ret);
+		return array('pms' => parse_pms($ret));
 	}
 	
 	/**
-		Send a Personal Message to a user
-		user_id | required | integer | get | Facepunch User ID
-		message | required | string | post | The message to submit
+		Description: Send a Personal Message to a user
+		Parameter: user_id | required | integer | get | Facepunch User ID
+		Parameter: message | required | string | post | The message to submit
+		Return: sent | boolean | Message sent or failed
 	**/
 	public function send($user_id)
 	{

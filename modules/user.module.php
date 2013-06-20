@@ -5,8 +5,9 @@ class User extends Module
 	protected $description = 'Get user information and send profile messages';
 	
 	/**
-		Gets a User by ID
-		id | required | integer | get | Facepunch User ID
+		Description: Gets a User by ID
+		Parameter: id | required | integer | get | Facepunch User ID
+		Return: user | object | User
 	**/
 	public function id($id)
 	{
@@ -20,8 +21,9 @@ class User extends Module
 	}
 	
 	/**
-		Gets a User by Username
-		username | required | string | get | Facepunch Username
+		Description: Gets a User by Username
+		Parameter: username | required | string | get | Facepunch Username
+		Return: user | object | User
 	**/
 	public function username($username)
 	{
@@ -35,9 +37,10 @@ class User extends Module
 	}
 	
 	/**
-		Adds a visitor message to a user profile
-		id | required | integer | get | Facepunch User ID
-		message | required | string | post | The message to submit
+		Description: Adds a visitor message to a user profile
+		Parameter: id | required | integer | get | Facepunch User ID
+		Parameter: message | required | string | post | The message to submit
+		Return: sent | boolean | Message sent or failed
 	**/
 	public function message($id)
 	{
