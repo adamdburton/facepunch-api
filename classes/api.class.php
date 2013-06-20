@@ -11,7 +11,6 @@ class API
 	private $api_version = 'v1';
 	
 	private $module, $action, $parameters;
-	
 	private $cache;
 	
 	function __construct()
@@ -21,7 +20,7 @@ class API
 		if(class_exists('Memcache'))
 		{
 			$this->cache = new Memcache();
-		
+			
 			if(!$this->cache->connect('localhost', 11211))
 			{
 				$this->error('Memcache unavailable.');
