@@ -57,7 +57,7 @@ class General extends Module
 		
 		$ret = $this->api->request('fp_events.php', $data);
 		
-		return array('events' => parse_ticker($ret));
+		return array('events' => parse_events($ret));
 	}
 }
 
@@ -115,11 +115,11 @@ function parse_ticker($str)
 			$linkparts2 = explode('#post', $links[2]->href);
 	
 			$event['username'] = $links[1]->innertext;
-			$event['userid'] = quick_match('u\=(\d+)', $links[1]->href);
+			$event['user_id'] = quick_match('u\=(\d+)', $links[1]->href);
 			$event['forum'] = $links[0]->innertext;
-			$event['forumid'] = str_replace('forumdisplay.php?f=', '', $links[0]->href);
+			$event['forum_id'] = str_replace('forumdisplay.php?f=', '', $links[0]->href);
 			$event['thread'] = $links[2]->innertext;
-			$event['threadid'] = quick_match('t\=(\d+)', $links[2]->href);
+			$event['thread_id'] = quick_match('t\=(\d+)', $links[2]->href);
 			$event['postid'] = intval($linkparts2[1]);
 			
 			foreach($html->find('div div') as $div)
@@ -138,12 +138,12 @@ function parse_ticker($str)
 		else if(strpos($icon->src, 'fp/events/pban.png') !== false)
 		{
 			$event['type'] = 'permaban';
-			$event['modusername'] = $links[0]->innertext;
-			$event['moduserid'] = quick_match('u\=(\d+)', $links[0]->href);
+			$event['mod_username'] = $links[0]->innertext;
+			$event['mod_user_id'] = quick_match('u\=(\d+)', $links[0]->href);
 			$event['username'] = $links[2]->innertext;
-			$event['userid'] = quick_match('u\=(\d+)', $links[2]->href);
+			$event['user_id'] = quick_match('u\=(\d+)', $links[2]->href);
 			$event['thread'] = $links[4]->innertext;
-			$event['threadid'] = quick_match('t\=(\d+)', $links[4]->href);
+			$event['thread_id'] = quick_match('t\=(\d+)', $links[4]->href);
 			$event['postid'] = quick_match('p\=(\d+)', $links[4]->href);
 			
 			if($bolds)
@@ -154,12 +154,12 @@ function parse_ticker($str)
 		else if(strpos($icon->src, 'fp/events/ban.png') !== false)
 		{
 			$event['type'] = 'ban';
-			$event['modusername'] = $links[0]->innertext;
-			$event['moduserid'] = quick_match('u\=(\d+)', $links[0]->href);
+			$event['mod_username'] = $links[0]->innertext;
+			$event['mod_user_id'] = quick_match('u\=(\d+)', $links[0]->href);
 			$event['username'] = $links[2]->innertext;
-			$event['userid'] = quick_match('u\=(\d+)', $links[2]->href);
+			$event['user_id'] = quick_match('u\=(\d+)', $links[2]->href);
 			$event['thread'] = $links[4]->innertext;
-			$event['threadid'] = quick_match('t\=(\d+)', $links[4]->href);
+			$event['thread_id'] = quick_match('t\=(\d+)', $links[4]->href);
 			$event['postid'] = quick_match('p\=(\d+)', $links[4]->href);
 			$event['duration'] = strtolower($bolds[0]->innertext);
 			
@@ -171,13 +171,13 @@ function parse_ticker($str)
 		else if(strpos($icon->src, 'fp/events/unban.png') !== false)
 		{
 			$event['type'] = 'unban';
-			$event['modusername'] = $links[0]->innertext;
-			$event['moduserid'] = quick_match('u\=(\d+)', $links[0]->href);
+			$event['mod_username'] = $links[0]->innertext;
+			$event['mod_user_id'] = quick_match('u\=(\d+)', $links[0]->href);
 			
 			if(isset($links[2]))
 			{
 				$event['username'] = $links[2]->innertext;
-				$event['userid'] = quick_match('u\=(\d+)', $links[2]->href);
+				$event['user_id'] = quick_match('u\=(\d+)', $links[2]->href);
 			}
 			
 			if($bolds)
@@ -188,12 +188,12 @@ function parse_ticker($str)
 		else if(strpos($icon->src, 'fp/events/closed.png') !== false)
 		{
 			$event['type'] = 'closed';
-			$event['modusername'] = $links[0]->innertext;
-			$event['moduserid'] = quick_match('u\=(\d+)', $links[0]->href);
+			$event['mod_username'] = $links[0]->innertext;
+			$event['mod_user_id'] = quick_match('u\=(\d+)', $links[0]->href);
 			$event['username'] = $links[2]->innertext;
-			$event['userid'] = quick_match('u\=(\d+)', $links[2]->href);
+			$event['user_id'] = quick_match('u\=(\d+)', $links[2]->href);
 			$event['thread'] = $links[4]->innertext;
-			$event['threadid'] = quick_match('t\=(\d+)', $links[4]->href);
+			$event['thread_id'] = quick_match('t\=(\d+)', $links[4]->href);
 			
 			if($bolds)
 			{
@@ -203,12 +203,12 @@ function parse_ticker($str)
 		else if(strpos($icon->src, 'fp/events/ddt.png') !== false)
 		{
 			$event['type'] = 'ddt';
-			$event['modusername'] = $links[0]->innertext;
-			$event['moduserid'] = quick_match('u\=(\d+)', $links[0]->href);
+			$event['mod_username'] = $links[0]->innertext;
+			$event['mod_user_id'] = quick_match('u\=(\d+)', $links[0]->href);
 			$event['username'] = $links[2]->innertext;
-			$event['userid'] = quick_match('u\=(\d+)', $links[2]->href);
+			$event['user_id'] = quick_match('u\=(\d+)', $links[2]->href);
 			$event['thread'] = $links[2]->innertext;
-			$event['threadid'] = quick_match('t\=(\d+)', $links[2]->href);
+			$event['thread_id'] = quick_match('t\=(\d+)', $links[2]->href);
 			
 			if($bolds)
 			{
@@ -219,13 +219,13 @@ function parse_ticker($str)
 		{
 			$event['type'] = 'newuser';
 			$event['username'] = $links[0]->innertext;
-			$event['userid'] = quick_match('u\=(\d+)', $links[0]->href);
+			$event['user_id'] = quick_match('u\=(\d+)', $links[0]->href);
 		}
 		else if(strpos($icon->src, 'fp/events/spmb.png') !== false)
 		{				
 			$event['type'] = 'spambot';
 			$event['username'] = $links[0]->innertext;
-			$event['userid'] = quick_match('u\=(\d+)', $links[0]->href);
+			$event['user_id'] = quick_match('u\=(\d+)', $links[0]->href);
 		}
 		else if(strpos($html, 'rated your post') !== false)
 		{
@@ -237,9 +237,9 @@ function parse_ticker($str)
 			$event['type'] = 'rating';
 			//$event['rating'] = $rating;
 			$event['username'] = $links[0]->innertext;
-			$event['userid'] = quick_match('u\=(\d+)', $links[0]->href);
+			$event['user_id'] = quick_match('u\=(\d+)', $links[0]->href);
 			$event['thread'] = $links[1]->innertext;
-			$event['threadid'] = quick_match('t\=(\d+)', $links[1]->href);
+			$event['thread_id'] = quick_match('t\=(\d+)', $links[1]->href);
 			$event['postid'] = quick_match('p\=(\d+)', $links[1]->href);
 		}
 
@@ -255,238 +255,242 @@ function parse_events($str)
 	
 	$events = array();
 	
-	foreach($html->find('div[class=eventtime]') as $eventtime)
+	foreach($html->find('div[class=eventtime]') as $eventtime_node)
 	{
-		foreach($eventtimes as $eventtime_node)
+		$eventtime = array();
+
+		$eventtime['name'] = ucfirst(strtolower($eventtime_node->find('text', 0)->plaintext));
+		$eventtime['events'] = array();
+
+		$eventlist = $eventtime_node->find('ul div li');
+
+		foreach($eventlist as $event_node)
 		{
-			$eventtime = array();
+			$icon = $event_node->find('img', 0);
+			$links = $event_node->find('a');
+			$bolds = $event_node->find('b');
 
-			$eventtime['name'] = ucfirst(strtolower($eventtime_node->find('text', 0)->plaintext));
-			$eventtime['events'] = array();
+			$event = array();
+			$event['type'] = str_replace('fp_events.php?type=', '', $event_node->find('a', 0)->href);
 
-			$eventlist = $eventtime_node->find('ul div li');
-
-			foreach($eventlist as $event_node)
+			switch($event['type'])
 			{
-				$icon = $event_node->find('img', 0);
-				$links = $event_node->find('a');
-				$bolds = $event_node->find('b');
-
-				$event = array();
-				$event['type'] = str_replace('fp_events.php?type=', '', $event_node->find('a', 0)->getAttribute('href'));
-
-				switch($event['type'])
-				{
-					case 'pban':
-						$event['modusername'] = $links[1]->innertext;
-						$event['moduserid'] = quick_match('u\=(\d+)', $links[1]->href);
-						$event['username'] = $links[2]->innertext;
-						$event['userid'] = quick_match('u\=(\d+)', $links[2]->href);
-						
-						if(isset($links[5]))
-						{
-							$event['thread'] = $links[3]->innertext;
-							$event['threadid'] = quick_match('t\=(\d+)', $links[3]->href);
-							$event['postid'] = quick_match('p\=(\d+)', $links[3]->href);
-						}
-						
-						if($bolds)
-						{
-							$event['reason'] = $bolds[0]->innertext;
-						}
-						
-						break;
-						
-					case 'ban':
-						$event['modusername'] = $links[1]->innertext;
-						$event['moduserid'] = quick_match('u\=(\d+)', $links[1]->href);
-						$event['username'] = $links[2]->innertext;
-						$event['userid'] = quick_match('u\=(\d+)', $links[2]->href);
-						
-						if(isset($links[5]))
-						{
-							$event['thread'] = $links[3]->innertext;
-							$event['threadid'] = quick_match('t\=(\d+)', $links[3]->href);
-							$event['postid'] = quick_match('p\=(\d+)', $links[3]->href);
-						}
-						
-						$event['duration'] = strtolower($bolds[0]->innertext);
-						
-						if(isset($bolds[1]))
-						{
-							$event['reason'] = $bolds[1]->innertext;
-						}
-						
-						break;
-						
-					case 'unban':
-						if(count($links) < 3)
-						{
-							continue;
-						}
-						
-						$event['modusername'] = $links[1]->innertext;
-						$event['moduserid'] = quick_match('u\=(\d+)', $links[1]->href);
-						$event['username'] = $links[2]->innertext;
-						$event['userid'] = quick_match('u\=(\d+)', $links[2]->href);
-						
-						if($bolds)
-						{
-							$event['reason'] = $bolds[0]->innertext;
-						}
-						
-						break;
-						
-					case 'closed':
-						$event['modusername'] = $links[1]->innertext;
-						$event['moduserid'] = quick_match('u\=(\d+)', $links[1]->href);
-						$event['username'] = $links[2]->innertext;
-						$event['userid'] = quick_match('u\=(\d+)', $links[2]->href);
+				case 'pban':
+					$event['mod_username'] = $links[1]->innertext;
+					$event['mod_user_id'] = quick_match('u\=(\d+)', $links[1]->href);
+					$event['username'] = $links[2]->innertext;
+					$event['user_id'] = quick_match('u\=(\d+)', $links[2]->href);
+					
+					if(isset($links[5]))
+					{
 						$event['thread'] = $links[3]->innertext;
-						$event['threadid'] = quick_match('t\=(\d+)', $links[3]->href);
-						$event['forum'] = $links[4]->innertext;
-						$event['forumid'] = quick_match('f\=(\d+)', $links[4]->href);
-						
-						if($bolds)
-						{
-							$event['reason'] = $bolds[0]->innertext;
-						}
-						
-						break;
-						
-					case 'opened':
-						$event['modusername'] = $links[1]->innertext;
-						$event['moduserid'] = quick_match('u\=(\d+)', $links[1]->href);
-						$event['thread'] = $links[2]->innertext;
-						$event['threadid'] = quick_match('t\=(\d+)', $links[2]->href);
-						$event['forum'] = $links[3]->innertext;
-						$event['forumid'] = quick_match('f\=(\d+)', $links[3]->href);
-						
-						if($bolds)
-						{
-							$event['reason'] = $bolds[0]->innertext;
-						}
-						
-						break;
-						
-					case 'ddt':
-						$event['modusername'] = $links[1]->innertext;
-						$event['moduserid'] = quick_match('u\=(\d+)', $links[1]->href);
-						$event['thread'] = $links[2]->innertext;
-						$event['threadid'] = quick_match('t\=(\d+)', $links[2]->href);
-						$event['forum'] = $links[3]->innertext;
-						$event['forumid'] = quick_match('f\=(\d+)', $links[3]->href);
-						
-						if($bolds)
-						{
-							$event['reason'] = $bolds[0]->innertext;
-						}
-						
-						break;
-						
-					case 'rename':
-						$event['modusername'] = $links[1]->innertext;
-						$event['moduserid'] = quick_match('u\=(\d+)', $links[1]->href);
+						$event['thread_id'] = quick_match('t\=(\d+)', $links[3]->href);
+						$event['postid'] = quick_match('p\=(\d+)', $links[3]->href);
+					}
+					
+					if($bolds)
+					{
+						$event['reason'] = $bolds[0]->innertext;
+					}
+					
+					break;
+					
+				case 'ban':
+					$event['mod_username'] = $links[1]->innertext;
+					$event['mod_user_id'] = quick_match('u\=(\d+)', $links[1]->href);
+					$event['username'] = $links[2]->innertext;
+					$event['user_id'] = quick_match('u\=(\d+)', $links[2]->href);
+					
+					if(isset($links[5]))
+					{
 						$event['thread'] = $links[3]->innertext;
-						$event['threadid'] = quick_match('t\=(\d+)', $links[3]->href);
-						$event['forum'] = $links[2]->innertext;
-						$event['forumid'] = quick_match('f\=(\d+)', $links[2]->href);
-						$event['oldname'] = $bolds[0]->innertext;
-						
-						break;
-						
-					case 'delhard':
-						$event['modusername'] = $links[1]->innertext;
-						$event['moduserid'] = quick_match('u\=(\d+)', $links[1]->href);
-						$event['thread'] = $bolds[0]->innertext;
-						$event['forum'] = $links[2]->innertext;
-						$event['forumid'] = quick_match('f\=(\d+)', $links[2]->href);
-						
-						break;
-						
-					case 'delsoft':
-						$event['modusername'] = $links[1]->innertext;
-						$event['moduserid'] = quick_match('u\=(\d+)', $links[1]->href);
-						$event['thread'] = $links[2]->innertext;
-						$event['threadid'] = quick_match('t\=(\d+)', $links[2]->href);
-						$event['forum'] = $links[3]->innertext;
-						$event['forumid'] = quick_match('f\=(\d+)', $links[3]->href);
-						
-						break;
-						
-					case 'mov':
-						$event['modusername'] = $links[1]->innertext;
-						$event['moduserid'] = quick_match('u\=(\d+)', $links[1]->href);
-						$event['username'] = $links[2]->innertext;
-						$event['userid'] = quick_match('u\=(\d+)', $links[2]->href);
-						$event['thread'] = $links[3]->innertext;
-						$event['threadid'] = quick_match('t\=(\d+)', $links[3]->href);
-						$event['forum'] = $links[4]->innertext;
-						$event['forumid'] = quick_match('f\=(\d+)', $links[4]->href);
-						$event['toforum'] = $links[5]->innertext;
-						$event['toforumid'] = quick_match('f\=(\d+)', $links[5]->href);
-						
-						break;
-						
-					case 'capsfix':
-						$event['modusername'] = $links[1]->innertext;
-						$event['moduserid'] = quick_match('u\=(\d+)', $links[1]->href);
-						$event['thread'] = $links[2]->innertext;
-						$event['threadid'] = quick_match('t\=(\d+)', $links[2]->href);
-						
-						break;
-						
-					case 'toobig':
-						$event['thread'] = $links[1]->innertext;
-						$event['threadid'] = quick_match('t\=(\d+)', $links[1]->href);
-						$event['numposts'] = intval($bolds[0]->innertext);
-						
-						break;
-						
-					case 'title':
-						if(count($links) > 3)
-						{
-							$event['modusername'] = $links[1]->innertext;
-							$event['moduserid'] = quick_match('u\=(\d+)', $links[1]->href);
-							$event['username'] = $links[2]->innertext;
-							$event['userid'] = quick_match('u\=(\d+)', $links[2]->href);
-						}
-						else
-						{
-							$event['username'] = $links[1]->innertext;
-							$event['userid'] = quick_match('u\=(\d+)', $links[1]->href);
-						}
-						
-						break;
-						
-					case 'regi':
-						$event['username'] = $links[1]->innertext;
-						$event['userid'] = quick_match('u\=(\d+)', $links[1]->href);
-						$event['altusername'] = $links[2]->innertext;
-						$event['altuserid'] = quick_match('u\=(\d+)', $links[2]->href);
-						$event['ip'] = $bolds[0]->innertext;
-						
-						break;
-						
-					case 'spmb':
-						$event['username'] = $links[1]->innertext;
-						$event['userid'] = quick_match('u\=(\d+)', $links[1]->href);
-						$event['ip'] = $links[3]->innertext;
-						
-						break;
-						
-					case 'join':
-						$event['username'] = $links[1]->innertext;
-						$event['userid'] = quick_match('u\=(\d+)', $links[1]->href);
-						
-						break;
-						
-					default:
+						$event['thread_id'] = quick_match('t\=(\d+)', $links[3]->href);
+						$event['postid'] = quick_match('p\=(\d+)', $links[3]->href);
+					}
+					
+					$event['duration'] = strtolower($bolds[0]->innertext);
+					
+					if(isset($bolds[1]))
+					{
+						$event['reason'] = $bolds[1]->innertext;
+					}
+					
+					break;
+					
+				case 'unban':
+					if(count($links) < 3)
+					{
 						continue;
-						break;
-				}
+					}
+					
+					$event['mod_username'] = $links[1]->innertext;
+					$event['mod_user_id'] = quick_match('u\=(\d+)', $links[1]->href);
+					$event['username'] = $links[2]->innertext;
+					$event['user_id'] = quick_match('u\=(\d+)', $links[2]->href);
+					
+					if($bolds)
+					{
+						$event['reason'] = $bolds[0]->innertext;
+					}
+					
+					break;
+					
+				case 'closed':
+					$event['mod_username'] = $links[1]->innertext;
+					$event['mod_user_id'] = quick_match('u\=(\d+)', $links[1]->href);
+					$event['username'] = $links[2]->innertext;
+					$event['user_id'] = quick_match('u\=(\d+)', $links[2]->href);
+					$event['thread'] = $links[3]->innertext;
+					$event['thread_id'] = quick_match('t\=(\d+)', $links[3]->href);
+					$event['forum'] = $links[4]->innertext;
+					$event['forum_id'] = quick_match('f\=(\d+)', $links[4]->href);
+					
+					if($bolds)
+					{
+						$event['reason'] = $bolds[0]->innertext;
+					}
+					
+					break;
+					
+				case 'opened':
+					$event['mod_username'] = $links[1]->innertext;
+					$event['mod_user_id'] = quick_match('u\=(\d+)', $links[1]->href);
+					$event['thread'] = $links[2]->innertext;
+					$event['thread_id'] = quick_match('t\=(\d+)', $links[2]->href);
+					$event['forum'] = $links[3]->innertext;
+					$event['forum_id'] = quick_match('f\=(\d+)', $links[3]->href);
+					
+					if($bolds)
+					{
+						$event['reason'] = $bolds[0]->innertext;
+					}
+					
+					break;
+					
+				case 'ddt':
+					$event['mod_username'] = $links[1]->innertext;
+					$event['mod_user_id'] = quick_match('u\=(\d+)', $links[1]->href);
+					$event['thread'] = $links[2]->innertext;
+					$event['thread_id'] = quick_match('t\=(\d+)', $links[2]->href);
+					$event['forum'] = $links[3]->innertext;
+					$event['forum_id'] = quick_match('f\=(\d+)', $links[3]->href);
+					
+					if($bolds)
+					{
+						$event['reason'] = $bolds[0]->innertext;
+					}
+					
+					break;
+					
+				case 'rename':
+					$event['mod_username'] = $links[1]->innertext;
+					$event['mod_user_id'] = quick_match('u\=(\d+)', $links[1]->href);
+					$event['thread'] = $links[3]->innertext;
+					$event['thread_id'] = quick_match('t\=(\d+)', $links[3]->href);
+					$event['forum'] = $links[2]->innertext;
+					$event['forum_id'] = quick_match('f\=(\d+)', $links[2]->href);
+					$event['old_name'] = $bolds[0]->innertext;
+					
+					break;
+					
+				case 'delhard':
+					$event['mod_username'] = $links[1]->innertext;
+					$event['mod_user_id'] = quick_match('u\=(\d+)', $links[1]->href);
+					$event['thread'] = $bolds[0]->innertext;
+					$event['forum'] = $links[2]->innertext;
+					$event['forum_id'] = quick_match('f\=(\d+)', $links[2]->href);
+					
+					break;
+					
+				case 'delsoft':
+					$event['mod_username'] = $links[1]->innertext;
+					$event['mod_user_id'] = quick_match('u\=(\d+)', $links[1]->href);
+					$event['thread'] = $links[2]->innertext;
+					$event['thread_id'] = quick_match('t\=(\d+)', $links[2]->href);
+					$event['forum'] = $links[3]->innertext;
+					$event['forum_id'] = quick_match('f\=(\d+)', $links[3]->href);
+					
+					break;
+					
+				case 'mov':
+					$event['mod_username'] = $links[1]->innertext;
+					$event['mod_user_id'] = quick_match('u\=(\d+)', $links[1]->href);
+					$event['username'] = $links[2]->innertext;
+					$event['user_id'] = quick_match('u\=(\d+)', $links[2]->href);
+					$event['thread'] = $links[3]->innertext;
+					$event['thread_id'] = quick_match('t\=(\d+)', $links[3]->href);
+					$event['forum'] = $links[4]->innertext;
+					$event['forum_id'] = quick_match('f\=(\d+)', $links[4]->href);
+					$event['to_forum'] = $links[5]->innertext;
+					$event['to_forum_id'] = quick_match('f\=(\d+)', $links[5]->href);
+					
+					break;
+					
+				case 'capsfix':
+					$event['mod_username'] = $links[1]->innertext;
+					$event['mod_user_id'] = quick_match('u\=(\d+)', $links[1]->href);
+					$event['thread'] = $links[2]->innertext;
+					$event['thread_id'] = quick_match('t\=(\d+)', $links[2]->href);
+					
+					break;
+					
+				case 'toobig':
+					$event['thread'] = $links[1]->innertext;
+					$event['thread_id'] = quick_match('t\=(\d+)', $links[1]->href);
+					$event['num_posts'] = intval($bolds[0]->innertext);
+					
+					break;
+					
+				case 'title':
+					if(count($links) > 3)
+					{
+						$event['mod_username'] = $links[1]->innertext;
+						$event['mod_user_id'] = quick_match('u\=(\d+)', $links[1]->href);
+						$event['username'] = $links[2]->innertext;
+						$event['user_id'] = quick_match('u\=(\d+)', $links[2]->href);
+					}
+					else
+					{
+						$event['username'] = $links[1]->innertext;
+						$event['user_id'] = quick_match('u\=(\d+)', $links[1]->href);
+					}
+					
+					break;
+					
+				case 'regi':
+					$event['username'] = $links[1]->innertext;
+					$event['user_id'] = quick_match('u\=(\d+)', $links[1]->href);
+					$event['alt_username'] = $links[2]->innertext;
+					$event['alt_user_id'] = quick_match('u\=(\d+)', $links[2]->href);
+					$event['ip'] = $bolds[0]->innertext;
+					
+					break;
+					
+				case 'spmb':
+					$event['username'] = $links[1]->innertext;
+					$event['user_id'] = quick_match('u\=(\d+)', $links[1]->href);
+					$event['ip'] = $links[3]->innertext;
+					
+					break;
+					
+				case 'join':
+					$event['username'] = $links[1]->innertext;
+					$event['user_id'] = quick_match('u\=(\d+)', $links[1]->href);
+					
+					break;
 				
-				$eventtime['events'][] = $event;
+				case 'boostar':
+					$event['username'] = $links[1]->innertext;
+					$event['user_id'] = quick_match('u\=(\d+)', $links[1]->href);
+					
+					break;
+					
+				default:
+					continue;
+					break;
+			}
+			
+			$eventtime['events'][] = $event;
 		}
 
 		$events[] = $eventtime;

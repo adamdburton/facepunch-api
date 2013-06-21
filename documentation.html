@@ -202,7 +202,7 @@
 					e.preventDefault();
 				
 					var $response = $(this).parent().find('.response').html('');
-					var url = $(this).attr('action');
+					var url = $(this).attr('action');console.log(url);
 					var requires_authentication = $(this).data('requires-authentication');
 					var session_id = $('input#session_id').val();
 				
@@ -223,19 +223,22 @@
 						{
 							return alert(name + ' is required.');
 						}
+						
+						if(value == '')
+						{
+							if($field.data('password'))
+							{
+								value = md5(value);
+							}
 					
-						if($field.data('password'))
-						{
-							value = md5(value);
-						}
-					
-						if($field.data('method') == 'get')
-						{
-							url += '/' + value;
-						}
-						else
-						{
-							post[name] = value;
+							if($field.data('method') == 'get')
+							{
+								url += '/' + value;
+							}
+							else
+							{
+								post[name] = value;
+							}
 						}
 					});
 				
@@ -287,7 +290,6 @@
 		<header>
 			<h1>Facepunch API</h1>
 			<p><strong>Base URL:</strong> <input type="text" id="base_url" value="" /></p>
-			<p><strong>Session ID:</strong> <input type="text" id="session_id" value="" /></p>
 			
 			<h2>Request Format</h2>
 			<p>All GET parameters to actions are appended to the url as values. For example, the <code>/auth/login</code> action requires <code>username</code> and <code>password</code>, which would be formatted <input type="text" value="/auth/login/Example/5f4dcc3b5aa765d61d8327deb882cf99" />. POST parameters are passed as normal.</p>
@@ -297,6 +299,10 @@
 			<p>All responses are in <a href="http://en.wikipedia.org/wiki/JSON" target="_blank">json</a> format.</p>
 			<p>Successful requests will return a response with a property of <code>status</code> set to <code>success</code> and a <code>success</code> property containing the response data.</p>
 			<p>Failed or erroneous request will return a response with a property of <code>status</code> set to <code>error</code> and an <code>error</code> property containing the error.</p>
+			
+			<h2>Try It Out</h2>
+			<p>Each action has a form to submit and retrieve a response from the API. Once you authenticate, your <code>session_id</code> will be stored below for future calls.</p>
+			<p><strong>Session ID:</strong> <input type="text" id="session_id" value="" /></p>
 		</header>
 		<div id="container">
 			

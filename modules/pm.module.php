@@ -2,13 +2,13 @@
 
 class PM extends Module
 {
-	protected $description = 'Get and send PMs';
+	protected $description = 'Get and send Private Messages';
 	protected $dependencies = array('thread');
 	
 	/**
-		Description: Gets a Personal Message by ID
+		Description: Gets a Private Message by ID
 		Parameter: id | required | integer | get | PM ID
-		Return: pm | object | personal message
+		Return: pm | object | private message
 	**/
 	public function id($id)
 	{
@@ -23,9 +23,9 @@ class PM extends Module
 	}
 	
 	/**
-		Description: Deletes a Personal Message by ID
+		Description: Deletes a Private Message by ID
 		Parameter: id | required | integer | get | PM ID
-		Return: deleted | boolean | Personal Message deleted or failed
+		Return: deleted | boolean | Private Message deleted or failed
 	**/
 	public function delete($id)
 	{
@@ -46,7 +46,7 @@ class PM extends Module
 	}
 	
 	/**
-		Description: Gets Personal Messages folders
+		Description: Gets Private Messages folders
 		Return: folders | array | Array of folders
 	**/
 	public function folders()
@@ -57,9 +57,9 @@ class PM extends Module
 	}
 	
 	/**
-		Description: Gets Personal Messages from a folder
+		Description: Gets Private Messages from a folder
 		Parameter: id | optional | integer | get | Folder ID
-		Return: pms | array | Array of personal messages
+		Return: pms | array | Array of private messages
 	**/
 	public function folder($id = 0)
 	{
@@ -73,7 +73,7 @@ class PM extends Module
 	}
 	
 	/**
-		Description: Gets Personal Message Icons
+		Description: Gets Private Message Icons
 		Return: icons | array | Array of icons
 	**/
 	public function icons()
@@ -84,7 +84,7 @@ class PM extends Module
 	}
 	
 	/**
-		Description: Send a Personal Message to a user
+		Description: Send a Private Message to a user
 		Parameter: recipients | required | string | get | Semi-colon seperated list of Facepunch Username
 		Parameter: subject | required | string | get | The message subject
 		Parameter: icon | required | integer | get | The message icon ID
