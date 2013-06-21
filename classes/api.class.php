@@ -137,7 +137,7 @@ class API
 			$missing_param_names = array_map(function($v) { return $v['name']; }, $info['required_parameters']);
 			
 			$missing_params = array_slice($info['required_parameters'], count($params));
-			$this->error('Missing ' . hr_implode($missing_param_names) . ' parameter' . (count($missing_param_names) == 1 ? '' : 's') . '.');
+			$this->error('Missing ' . hr_implode($missing_param_names) . ' parameter' . plural(count($missing_param_names)) . '.');
 		}
 		
 		$this->module = $module;
@@ -502,4 +502,9 @@ function hr_implode($array)
 	{
 		return "'" . implode("' and '", $array) . "'";
 	}
+}
+
+function plural($var)
+{
+	return $var == 1 ? '' : 's';
 }

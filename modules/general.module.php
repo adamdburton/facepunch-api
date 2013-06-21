@@ -29,7 +29,17 @@ function parse_pms_notifications($str)
 	{
 		foreach($notifications_div->find('a') as $a)
 		{
-			$notifications[] = $a->title;
+			if(stristr($a->title, 'New PM'))
+			{
+				$count = quick_match('(\d+) New PM', $a->title);
+				$notification = $count . ' new PM' . plural($count);
+			}
+			else
+			{
+				$notification = $a->title;
+			}
+			
+			$notifications[] = $notification;
 		}
 	}
 	
