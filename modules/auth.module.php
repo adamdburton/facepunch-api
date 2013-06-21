@@ -123,22 +123,3 @@ class Auth extends Module
 		return '';
 	}
 }
-
-function parse_pms_notification($str)
-{
-	$html = is_string($str) ? str_get_html($str) : $str;
-	
-	$notifications = array();
-	
-	$notifications_div = $html->find('div.notifications');
-	
-	if($notifications_div)
-	{
-		foreach($notifications_div->find('a') as $a)
-		{
-			$notifications[] = $a->title;
-		}
-	}
-	
-	return $notifications;
-}
