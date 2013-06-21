@@ -3,7 +3,7 @@
 class Meta extends Module
 {
 	protected $description = 'Get API information';
-	protected $requires_session = false;
+	protected $requires_authentication = false;
 	
 	/**
 		Description: Get API documentation
@@ -20,8 +20,7 @@ class Meta extends Module
 			$module_meta = array(
 				'name' => $module_name,
 				'description' => $module->_description(),
-				'requires_session' => $module->_requires_session(),
-				//'dependencies' => $module->_dependencies()
+				'requires_authentication' => $module->_requires_authentication(),
 			);
 			
 			$module_meta['actions'] = array();

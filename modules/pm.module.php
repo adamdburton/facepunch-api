@@ -38,7 +38,7 @@ class PM extends Module
 		
 		$data['pm[' . $id . ']'] = true;
 		
-		$data = array_merge($data, $this->_get_security_data($id));
+		$data = array_merge($data, $this->_get_view_security_data($id));
 		
 		$ret = $this->api->request('private.php', $data, 'POST');
 		
@@ -58,10 +58,10 @@ class PM extends Module
 	
 	/**
 		Description: Gets Personal Messages from a folder
-		Parameter: id | required | integer | get | Folder ID
+		Parameter: id | optional | integer | get | Folder ID
 		Return: pms | array | Array of personal messages
 	**/
-	public function folder($id)
+	public function folder($id = 0)
 	{
 		$data = array(
 			'folderid' => $id
@@ -73,34 +73,71 @@ class PM extends Module
 	}
 	
 	/**
+		Description: Gets Personal Message Icons
+		Return: icons | array | Array of icons
+	**/
+	public function icons()
+	{
+		$ret = $this->api->request('private.php?do=newpm');
+		
+		return array('icons' => parse_pm_icons($ret));
+	}
+	
+	/**
 		Description: Send a Personal Message to a user
-		Parameter: username | required | string | get | Facepunch Username
+		Parameter: recipients | required | string | get | Semi-colon seperated list of Facepunch Username
+		Parameter: subject | required | string | get | The message subject
+		Parameter: icon | required | integer | get | The message icon ID
 		Parameter: message | required | string | post | The message to send
 		Return: sent | boolean | Message sent or failed
 	**/
-	public function send($username)
+	public function send($recipients, $subject, $icon)
 	{
 		$message = $_POST['message'];
 		
 		$data = array(
 			'do' => 'insertpm',
-			'recipients' => $username,
+			'recipients' => $recipients,
+			'title' => $subject,
+			'message' => $message,
+			'iconid' => $icon,
+			'parseurl' => 1,
+			'savecopy' => 1,
+			'sbutton' => 'Submit%20Message'
 		);
 		
-		//recipients=GitHub&bccrecipients=&title=Testing&message_backup=Testing+2&message=Testing+2&wysiwyg=0&iconid=0&s=&securitytoken=1371768003-9a7a18a299578a8b2d00cd898a04dabb2f4cbd16&do=insertpm&pmid=&forward=&receipt=1&savecopy=1&parseurl=1&disablesmilies=1&s=&securitytoken=1371768003-9a7a18a299578a8b2d00cd898a04dabb2f4cbd16&do=insertpm&pmid=&forward=&sbutton=Submit+Message
+		$data = array_merge($data, $this->_get_new_security_data());
 		
-		$data = array_merge($data, $this->_get_security_data($id));
-		
-		$ret = $this->api->request('private.php', $data, 'POST');
+		$ret = $this->api->request('private.php?do=insertpm&pmid=', $data, 'POST');
 		
 		return array('sent' => true);
 	}
 	
-	public function _get_security_data($id)
+	public function _get_view_security_data($id = null)
 	{
 		$data = array(
 			'do' => 'showpm',
 			'pmid' => $id,
+		);
+		
+		$ret = $this->api->request('private.php', $data);
+		
+		$securitytoken = quick_match('SECURITYTOKEN = \"([0-9a-z\-]+)\";', $ret);
+		
+		if(!$securitytoken)
+		{
+			$this->api->error('Security data not found.');
+		}
+		
+		return array(
+			'securitytoken' => $securitytoken
+		);
+	}
+	
+	public function _get_new_security_data()
+	{
+		$data = array(
+			'do' => 'newpm'
 		);
 		
 		$ret = $this->api->request('private.php', $data);
@@ -210,4 +247,28 @@ function parse_pms($str)
 	}
 	
 	return $pms;
+}
+
+function parse_pm_icons($str)
+{
+	$html = is_string($str) ? str_get_html($str) : $str;
+	
+	$icons = array();
+	
+	$posticons_img = $html->find('div.posticons', 0)->find('img');
+	
+  foreach($posticons_img as $icon_img)
+  {
+		$id = (int) quick_match('pi\_(\d+)', $icon_img->id);
+		$image_url = FACEPUNCH_URL . ltrim($icon_img->src, '/');
+		$title = $icon_img->alt;
+		
+		$icons[] = array(
+			'id' => $id,
+			'image_url' => $image_url,
+			'title' => $title
+		);
+  }
+	
+	return $icons;
 }

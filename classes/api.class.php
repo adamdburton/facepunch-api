@@ -304,6 +304,14 @@ class API
 			$this->error(trim($error));
 		}
 		
+		if(strstr($req, 'errorblock') && !strstr($req, '<p class="blockrow restore">'))
+		{
+			$html = str_get_html($req);
+			$error = $html->find('div.errorblock', 0)->find('ul.blockrow', 0)->plaintext;
+			
+			$this->error(trim($error));
+		}
+		
 		return $req;
 	}
 	

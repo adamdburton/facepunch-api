@@ -3,7 +3,7 @@
 class Module
 {
 	protected $description = '';
-	protected $requires_session = true;
+	protected $requires_authentication = true;
 	protected $dependencies = array();
 	
 	protected $api;
@@ -14,7 +14,7 @@ class Module
 		
 		// Check if we need a session
 		
-		if($called && $this->requires_session && !$this->api->auth->_get_session_id())
+		if($called && $this->requires_authentication && !$this->api->auth->_get_session_id())
 		{
 			$this->api->error('Invalid session or session has expired. Please authenticate.');
 		}
@@ -35,9 +35,9 @@ class Module
 		return $this->description;
 	}
 	
-	public function _requires_session()
+	public function _requires_authentication()
 	{
-		return $this->requires_session;
+		return $this->requires_authentication;
 	}
 	
 	public function _dependencies()

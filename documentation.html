@@ -203,10 +203,10 @@
 				
 					var $response = $(this).parent().find('.response').html('');
 					var url = $(this).attr('action');
-					var requires_session = $(this).data('requires-session');
+					var requires_authentication = $(this).data('requires-authentication');
 					var session_id = $('input#session_id').val();
 				
-					if(requires_session && session_id == '')
+					if(requires_authentication && session_id == '')
 					{
 						return alert('This module requires authentication. Please authenticate first.');
 					}
@@ -239,7 +239,7 @@
 						}
 					});
 				
-					if(requires_session)
+					if(requires_authentication)
 					{
 						url += '/' + session_id;
 					}
@@ -291,7 +291,7 @@
 			
 			<h2>Request Format</h2>
 			<p>All GET parameters to actions are appended to the url as values. For example, the <code>/auth/login</code> action requires <code>username</code> and <code>password</code>, which would be formatted <input type="text" value="/auth/login/Example/5f4dcc3b5aa765d61d8327deb882cf99" />. POST parameters are passed as normal.</p>
-			<p>For requests to actions in modules requiring a session, append the <code>session_id</code> returned from one of the <code>/auth</code> actions to the end of the url.</p>
+			<p>For requests to actions in modules requiring authentication, append the <code>session_id</code> returned from one of the <code>/auth</code> actions to the end of the url.</p>
 			
 			<h2>Response Format</h2>
 			<p>All responses are in <a href="http://en.wikipedia.org/wiki/JSON" target="_blank">json</a> format.</p>
@@ -306,9 +306,9 @@
 	<script type="text/html" id="template">
 		{{modules}}
 			{{name|set>module_name}}
-			{{requires_session|set>module_requires_session}}
+			{{requires_authentication|set>module_requires_authentication}}
 			<div class="module">
-				<a href="#">/{{name}} <span><span>{{requires_session|choose>Requires Session}}</span>{{description|downcase}}</span></a>
+				<a href="#">/{{name}} <span><span>{{requires_authentication|choose>Requires Authentication}}</span>{{description|downcase}}</span></a>
 				<div class="module_actions">
 				
 				{{actions}}
@@ -317,7 +317,7 @@
 						<a href="#">/{{module_name}}/{{name}} <span>{{description|downcase}}</span></a>
 						
 						<div class="action_info">
-							<form action="/v1/{{module_name}}/{{name}}" data-requires-session="{{module_requires_session}}">
+							<form action="/v1/{{module_name}}/{{name}}" data-requires-authentication="{{module_requires_authentication}}">
 								<h2>Parameters</h2>
 								
 								{{if parameters}}

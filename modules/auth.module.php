@@ -3,7 +3,7 @@
 class Auth extends Module
 {
 	protected $description = 'Authenticate';
-	protected $requires_session = false;
+	protected $requires_authentication = false;
 	
 	private $session_id = false;
 	
@@ -18,9 +18,9 @@ class Auth extends Module
 	{
 		$data = array(
 			'securitytoken' => 'guest',
-			'vb_login_username' => urlencode($username),
-			'vb_login_md5password' => urlencode($password),
-			'vb_login_md5password_utf' => urlencode($password),
+			'vb_login_username' => $username,
+			'vb_login_md5password' => $password,
+			'vb_login_md5password_utf' => $password,
 			'vb_login_password_hint' => '',
 			'cookieuser' => 1,
 			'do' => 'login',
@@ -122,4 +122,23 @@ class Auth extends Module
 		
 		return '';
 	}
+}
+
+function parse_pms_notification($str)
+{
+	$html = is_string($str) ? str_get_html($str) : $str;
+	
+	$notifications = array();
+	
+	$notifications_div = $html->find('div.notifications');
+	
+	if($notifications_div)
+	{
+		foreach($notifications_div->find('a') as $a)
+		{
+			$notifications[] = $a->title;
+		}
+	}
+	
+	return $notifications;
 }
