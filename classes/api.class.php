@@ -283,9 +283,9 @@ class API
 		
 		// Check if there was an error with the request
 		
-		if(!$req)
+		if($req === false)
 		{
-			$this->error('Service unavailable.');
+			$this->error('Service unavailable: ' . $url);
 		}
 		
 		// Check if we were shown an error message from Facepunch
@@ -304,12 +304,12 @@ class API
 			$this->error(trim($error));
 		}
 		
-		if(strstr($req, 'errorblock') && !strstr($req, '<p class="blockrow restore">'))
+		if(strstr($req, 'errorblock') && strstr($req, 'ul class="blockrow"') && !strstr($req, '<p class="blockrow restore">'))
 		{
 			$html = str_get_html($req);
-			$error = $html->find('div.errorblock', 0)->find('ul.blockrow', 0)->plaintext;
+			$error = $html->find('div.errorblock ul.blockrow', 0);
 			
-			$this->error(trim($error));
+			$this->error(trim($error->plaintext));
 		}
 		
 		return $req;

@@ -25,7 +25,10 @@ class Meta extends Module
 			
 			$module_meta['actions'] = array();
 			
-			foreach(get_class_methods($module) as $method)
+			$methods = get_class_methods($module);
+			sort($methods);
+			
+			foreach($methods as $method)
 			{
 				if(substr($method, 0, 1) != '_')
 				{

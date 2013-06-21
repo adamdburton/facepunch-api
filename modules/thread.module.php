@@ -107,6 +107,47 @@ class Thread extends Module
 		return array('threads' => parse_threads($ret, false));
 	}
 	
+	/**
+		Description: Gets thread icons
+		Parameter: forum_id | required | integer | get | Forum ID
+		Return: icons | array | Array of icons
+	**/
+	public function icons($forum_id)
+	{
+		$ret = $this->api->request('newthread.php?do=newthread&f=' . $forum_id);
+		
+		return array('icons' => parse_thread_icons($ret));
+	}
+	
+	/**
+		Description: Creates a new Thread
+		Parameter: forum_id | required | integer | get | Forum ID
+		Parameter: subject | required | string | get | Thread subject
+		Parameter: icon_id | required | integer | get | Thread icon ID
+		Parameter: message | required | string | post | Thread message
+		Return: created | boolean | Thread created or not
+	**/
+	public function create($forum_id, $subject, $icon_id)
+	{
+		$message = $_POST['message'];
+		
+		$data = array(
+			'subject' => $subject,
+			'message' => $message,
+			'f' => $forum_id,
+			'iconid' => $icon_id,
+			'do' => 'postthread',
+			'parseurl' => 1,
+			'sbutton' => 'Submit New Thread'
+		);
+		
+		$data = array_merge($data, $this->_get_security_data($id));
+		
+		$ret = $this->api->request('newreply.php?do=postthread&f=' . $forum_id, $data, 'POST');
+		
+		return array('created' => true);
+	}
+	
 	public function _get_security_data($thread_id)
 	{
 		$data = array(
@@ -115,8 +156,8 @@ class Thread extends Module
 		
 		$ret = $this->api->request('showthread.php', $data);
 		
-		$posthash = quick_match('\"posthash\":\"([0-9a-z])+\"', $ret);
-		$poststarttime = quick_match('\"poststarttime\":\"([0-9])+\"', $ret);
+		$posthash = quick_match('\"posthash\":\"([0-9a-z]+)\"', $ret);
+		$poststarttime = quick_match('\"poststarttime\":([0-9]+)', $ret);
 		$securitytoken = quick_match('SECURITYTOKEN = \"([0-9a-z\-]+)\";', $ret);
 		
 		if(!$posthash || !$poststarttime || !$securitytoken)
@@ -141,6 +182,10 @@ function parse_thread($str)
 	// Title
 	
 	$thread['title'] = trim($html->find('div#lastelement span', 0)->plaintext);
+	
+	// Locked
+	
+	$thread['locked'] = $html->find('span[id=reply_button] a', 0)->innertext == 'Reply';
 	
 	// Forum
 	
@@ -176,6 +221,10 @@ function parse_thread($str)
 	// Posts
 	
 	$thread['posts'] = parse_posts($html);
+	
+	// Viewers
+	
+	$thread['viewers'] = parse_viewers($html);
 	
 	return $thread;
 }
@@ -287,4 +336,50 @@ function parse_posts($str)
 	}
 	
 	return $posts;
+}
+
+function parse_thread_icons($str)
+{
+	$html = is_string($str) ? str_get_html($str) : $str;
+	
+	$icons = array();
+	
+	$posticon_images = $html->find('div.posticons', 0)->find('img');
+	
+  foreach($posticon_images as $icon_img)
+  {
+		$id = (int) quick_match('pi\_(\d+)', $icon_img->id);
+		$image_url = FACEPUNCH_URL . ltrim($icon_img->src, '/');
+		$title = $icon_img->alt;
+		
+		$icons[] = array(
+			'id' => $id,
+			'image_url' => $image_url,
+			'title' => $title
+		);
+  }
+	
+	return $icons;
+}
+
+function parse_viewers($str)
+{
+	$html = is_string($str) ? str_get_html($str) : $str;
+	
+	$viewers = array();
+	
+	$whos_reading = $html->find('div[id=whos_reading] ol li a');
+	
+	foreach($whos_reading as $whos_reading_a)
+	{
+		$user_id = quick_match('u\=(\d+)', $whos_reading_a->href);
+		
+		$viewers[] = array(
+			'user_id' => $user_id,
+			'username' => $whos_reading_a->plaintext,
+			'username_html' => $whos_reading_a->innertext,
+		);
+	}
+	
+	return $viewers;
 }
