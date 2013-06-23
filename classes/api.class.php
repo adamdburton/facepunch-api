@@ -36,7 +36,7 @@ class API
 		
 		// Split the request
 		
-		$parts = explode('/', urldecode($_SERVER['QUERY_STRING']));
+		$parts = explode('/', urldecode($_SERVER['PATH_INFO']));
 		
 		// Shift off the first value if it's blank or index.php
 		
@@ -114,39 +114,54 @@ class API
 		$version = array_shift($parts);
 		$module = array_shift($parts);
 		$action = array_shift($parts);
-		$params = $parts;
 		
 		// Check param counts
 		
 		$info = get_function_info($module, $action);
 		
-		$req_args = count($info['required_parameters']);
+		$available_params = array();
+		$missing_params = array();
 		
-		// Push in POST data matching the required_fields
-		
-		foreach($info['required_parameters'] as $required_param)
+		foreach($info['parameters'] as $param)
 		{
-			if(isset($_POST[$required_param]))
+			$name = $param['name'];
+			
+			if($param['required'] && !isset($_GET[$name]) && !isset($_POST[$name]))
 			{
-				$params[] = $_POST[$required_param];
+				$missing_params[] = $param['name'];
+				continue;
+			}
+			elseif(!$param['required'] && !isset($_GET[$name]) && !isset($_POST[$name]))
+			{
+				$available_params[$name] = $param['default'];
+				continue;
+			}
+			
+			if($param['method'] == 'get')
+			{
+				$available_params[$name] = $_GET[$name];
+				continue;
+			}
+		
+			if($param['method'] == 'post')
+			{
+				$available_params[$name] = $_POST[$name];
+				continue;
 			}
 		}
 		
-		if(count($params) < $req_args)
+		if(count($missing_params) < 0)
 		{
-			$missing_param_names = array_map(function($v) { return $v['name']; }, $info['required_parameters']);
-			
-			$missing_params = array_slice($info['required_parameters'], count($params));
-			$this->error('Missing ' . hr_implode($missing_param_names) . ' parameter' . plural(count($missing_param_names)) . '.');
+			$this->error('Missing ' . hr_implode($missing_params) . ' parameter' . plural(count($missing_params)) . '.');
 		}
 		
 		$this->module = $module;
 		$this->action = $action;
-		$this->parameters = $params;
+		$this->parameters = $available_params;
 		
 		// Let's go!
 		
-		$data = call_user_func_array(array($this->$module, $this->action), $this->parameters);
+		$data = call_user_func_array(array($this->$module, $this->action), $available_params);
 		
 		// We only get here if we dont error, so we should have some data
 		
@@ -343,9 +358,10 @@ class API
 
 function get_function_info($object, $function)
 {
-	$reflection = new ReflectionMethod($object, $function);
+	$function_reflection = new ReflectionMethod($object, $function);
+	$function_parameters = $function_reflection->getParameters();
 	
-	$comment = trim(substr($reflection->getDocComment(), 4, -4));
+	$comment = trim(substr($function_reflection->getDocComment(), 4, -4));
 	
 	$description = quick_match('Description\: ([A-Za-z0-9., ]+)', $comment);
 	$return = quick_match('Return\: (.+)', $comment);
@@ -359,7 +375,7 @@ function get_function_info($object, $function)
 	{
 		foreach($matches as $match)
 		{
-			$parameters[] = array(
+			$param = array(
 				'name' => $match[1],
 				'required' => $match[2] == 'required' ? true : false,
 				'type' => $match[3],
@@ -374,7 +390,17 @@ function get_function_info($object, $function)
 			else
 			{
 				$opt_param_names[] = $match[1];
+				
+				foreach($function_parameters as $p)
+				{
+					if($p->getName() == $match[1])
+					{
+						$param['default'] = $p->getDefaultValue();
+					}
+				}
 			}
+			
+			$parameters[] = $param;
 		}
 	}
 	

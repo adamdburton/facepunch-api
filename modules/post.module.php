@@ -22,7 +22,15 @@ class Post extends Module
 		$thread = parse_thread($ret);
 		$posts = parse_posts($ret);
 		
-		return array('thread' => $thread, 'post' => $posts[0]);
+		foreach($posts as $post)
+		{
+			if($post['post_id'] == $id)
+			{
+				return array('thread' => $thread, 'post' => $post);
+			}
+		}
+		
+		$this->api->error('Post not found.');
 	}
 	
 	/**

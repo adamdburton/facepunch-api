@@ -24,6 +24,23 @@ class Thread extends Module
 	}
 	
 	/**
+		Description: Gets the first page of a Thread by ID with unread posts
+		Parameter: id | required | integer | get | Thread ID
+		Return: thread | object | Thread with array of posts
+	**/
+	public function unread($id)
+	{
+		$data = array(
+			't' => $id,
+			'goto' => 'newpost'
+		);
+		
+		$ret = $this->api->request('showthread.php', $data);
+		
+		return array('thread' => parse_thread($ret));
+	}
+	
+	/**
 		Description: Reply to a Thread
 		Parameter: id | required | integer | get | Thread ID
 		Parameter: subscribe | optional | integer | get | Whether to subscribe to the thread
@@ -77,7 +94,17 @@ class Thread extends Module
 	{
 		$ret = $this->api->request('fp_read.php');
 		
-		return array('threads' => parse_threads($ret, false));
+		$threads = parse_forum($ret, false);
+		
+		foreach($threads['threads'] as $index => $thread)
+		{
+			if(!isset($thread['num_new_posts']))
+			{
+				unset($threads['threads'][$index]);
+			}
+		}
+		
+		return $threads;
 	}
 	
 	/**
@@ -88,7 +115,7 @@ class Thread extends Module
 	{
 		$ret = $this->api->request('fp_popular.php');
 		
-		return array('threads' => parse_threads($ret, false));
+		return parse_forum($ret, false);
 	}
 	
 	/**
@@ -104,7 +131,7 @@ class Thread extends Module
 		
 		$ret = $this->api->request('subscription.php');
 		
-		return array('threads' => parse_threads($ret, false));
+		return array('threads' => parse_forum($ret, false));
 	}
 	
 	/**
@@ -212,7 +239,7 @@ function parse_thread($str)
 	}
 	else
 	{
-		$thread['num_pages'] = array(
+		$thread['pages'] = array(
 			'current' => 1,
 			'total' => 1
 		);
@@ -224,7 +251,7 @@ function parse_thread($str)
 	
 	// Viewers
 	
-	$thread['viewers'] = parse_viewers($html);
+	$thread['viewers'] = parse_thread_viewers($html);
 	
 	return $thread;
 }
@@ -296,6 +323,27 @@ function parse_posts($str)
 		
 		// Ratings
 		
+		$rating_results_span = $post_row->find('span.rating_results', 0);
+		
+		if($rating_results_span)
+		{
+			$ratings = array();
+		
+			if(preg_match_all('/([a-z_.]+)\" alt\=\"([A-Za-z0-9 ]+)\" \/\> [A-Za-z0-9 ]+? x \<strong\>(\d+)\<\/strong>/', $rating_results_span, $matches, PREG_SET_ORDER))
+			{
+				foreach($matches as $match)
+				{
+					$ratings[] = array(
+						'title' => $match[2],
+						'icon_url' => FACEPUNCH_URL . 'fp/ratings/' . $match[1],
+						'count' => $match[3]
+					);
+				}
+			}
+			
+			$post['ratings'] = $ratings;
+		}
+		
 		// Rate
 		
 		$postrating_div = $post_row->find('div.postrating', 0);
@@ -362,7 +410,7 @@ function parse_thread_icons($str)
 	return $icons;
 }
 
-function parse_viewers($str)
+function parse_thread_viewers($str)
 {
 	$html = is_string($str) ? str_get_html($str) : $str;
 	

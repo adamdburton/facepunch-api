@@ -31,19 +31,22 @@ class Auth extends Module
 		
 		if(preg_match_all('#Set-Cookie: (.*);#U', $ret, $matches) > 0)
 		{
-			$cookies = implode(';', $matches[1]);
-			$user_id = quick_match('bb_userid=(\d+);', $ret);
+			$userid = quick_match('bb_userid=(\d+);', $ret);
+			$password = quick_match('bb_password=([a-z0-9]+);', $ret);
+			$sessionhash = quick_match('bb_sessionhash=([a-z0-9]+);', $ret);
+			
+			$cookies = 'bb_userid=' . $userid . ';bb_password=' . $password . ';bb_sessionhash=' . $sessionhash;
 			
 			$data = array(
 				'cookies' => $cookies,
-				'user_id' => $user_id
+				'user_id' => $userid
 			);
 			
 			$session_id = md5(uniqid());
 			
 			$this->api->cache($session_id, $data);
 			
-			return array('session_id' => $session_id, 'user_id' => $user_id);
+			return array('session_id' => $session_id, 'user_id' => $userid);
 		}
 		else
 		{
@@ -61,11 +64,11 @@ class Auth extends Module
 	**/
 	public function cookie_login($userid, $password, $sessionhash)
 	{
-		$cookies = 'bb_user=' . $userid . ';bb_password=' . $password . ';bb_sessionhash=' . $sessionhash;
+		$cookies = 'bb_userid=' . $userid . ';bb_password=' . $password . ';bb_sessionhash=' . $sessionhash;
 		
 		$data = array(
 			'cookies' => $cookies,
-			'user_id' => $bb_userid
+			'user_id' => $userid
 		);
 		
 		$session_id = md5(uniqid());
@@ -80,6 +83,7 @@ class Auth extends Module
 		}
 		else
 		{
+			$this->session_id = null;
 			$this->api->cache($session_id, null);
 			$this->api->error('Invalid cookies.');
 		}

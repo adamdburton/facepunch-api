@@ -90,6 +90,8 @@ function parse_pms_notifications($str)
 	return $notifications;
 }
 
+// Most of the below was stolen from Hexxeh <3
+
 function parse_ticker($str)
 {
 	$json_data = json_decode($str, true);
@@ -98,6 +100,11 @@ function parse_ticker($str)
 	
 	foreach($json_data as $item)
 	{
+		if(!$item['html'])
+		{
+			continue;
+		}
+		
 		$html = html_entity_decode($item['html']);
 		$html = str_get_html($html);
 		$icon = $html->find('img', 0);
@@ -132,7 +139,7 @@ function parse_ticker($str)
 			
 			if(strpos($html, 'background-color: rgba(190, 220, 255') !== false)
 			{
-				$event['lastread'] = capitalise_month($links[3]->innertext);
+				$event['lastread'] = $links[3]->innertext;
 			}
 		}
 		else if(strpos($icon->src, 'fp/events/pban.png') !== false)

@@ -35,7 +35,7 @@ class Forum extends Module
 		
 		$ret = $this->api->request('forumdisplay.php', $data);
 		
-		return parse_threads($ret);
+		return parse_forum($ret);
 	}
 }
 
@@ -134,12 +134,52 @@ function parse_forums($str)
 	return $forums;
 }
 
-function parse_threads($str, $include_subforums = false)
+function parse_forum($str, $include_subforums = true)
 {
 	$html = is_string($str) ? str_get_html($str) : $str;
 	
-	// Subforums
+	// Forum
 	
+	$forum = array();
+	
+	$breadcrumb_div = $html->find('div[id=breadcrumb]', 0);
+	
+	$forum['title'] = $breadcrumb_div->find('div[id=lastelement] span', 0)->innertext;
+	
+	if($breadcrumb_div->find('span.navbit a', -1))
+	{
+		$forum['parent'] = array(
+			'forum_id' => quick_match('f\=(\d+)', $breadcrumb_div->find('span.navbit a', -1)),
+			'title' => $breadcrumb_div->find('span.navbit a', -1)->innertext
+		);
+	}
+	
+	$forum['viewers'] = parse_forum_viewers($html);
+	
+	// Pages
+	
+	$pagination = $html->find('div.threadpagenav', 0);
+	
+	if($pagination)
+	{
+		$first_last = $pagination->find('span.first_last a', -1);
+		$selected = $pagination->find('span.selected a', 0);
+		
+		$forum['pages'] = array(
+			'current' => (int) $selected->plaintext,
+			'total' => (int) ($first_last && $first_last->rel != 'start' ? (int) quick_match('page=(\d+)', $first_last->href) : $selected->plaintext)
+		);
+	}
+	else
+	{
+		$forum['pages'] = array(
+			'current' => 1,
+			'total' => 1
+		);
+	}
+	
+	// Subforums
+	/* Removed for now - there aren't any!
 	$subforums = array();
 	
 	if($include_subforums)
@@ -164,6 +204,7 @@ function parse_threads($str, $include_subforums = false)
 			}
 		}
 	}
+	*/
 	
 	// Threads
 	
@@ -280,5 +321,27 @@ function parse_threads($str, $include_subforums = false)
 		$threads[] = $thread;
 	}
 	
-	return array('subforums' => $subforums, 'threads' => $threads);
+	return array('forum' => $forum, /* removed 'subforums' => $subforums, */ 'threads' => $threads);
+}
+
+function parse_forum_viewers($str)
+{
+	$html = is_string($str) ? str_get_html($str) : $str;
+	
+	$viewers = array();
+	
+	$whos_reading = $html->find('div[id=whos_reading] ol li a');
+	
+	foreach($whos_reading as $whos_reading_a)
+	{
+		$user_id = quick_match('u\=(\d+)', $whos_reading_a->href);
+		
+		$viewers[] = array(
+			'user_id' => $user_id,
+			'username' => $whos_reading_a->plaintext,
+			'username_html' => $whos_reading_a->innertext,
+		);
+	}
+	
+	return $viewers;
 }

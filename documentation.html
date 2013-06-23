@@ -219,7 +219,7 @@
 					e.preventDefault();
 				
 					var $response = $(this).parent().find('.response').html('');
-					var url = $(this).attr('action');console.log(url);
+					var url = $(this).attr('action');
 					var requires_authentication = $(this).data('requires-authentication');
 					var session_id = $('input#session_id').val();
 				
@@ -228,6 +228,7 @@
 						return alert('This module requires authentication. Please authenticate first.');
 					}
 				
+					var get = {};
 					var post = {};
 				
 					$(this).find('input.parameter').each(function()
@@ -238,19 +239,15 @@
 					
 						if($field.data('required') && value == '')
 						{
-							return alert(name + ' is required.');
+							alert(name + ' is required.');
+							return false;
 						}
 						
-						if(value == '')
+						if(value != '')
 						{
-							if($field.data('password'))
-							{
-								value = md5(value);
-							}
-					
 							if($field.data('method') == 'get')
 							{
-								url += '/' + value;
+								get[name] = value;
 							}
 							else
 							{
@@ -263,8 +260,8 @@
 					{
 						url += '/' + session_id;
 					}
-				
-					$.post(url, post, function(data)
+					
+					$.post(url + '?' + $.param(get), post, function(data)
 					{
 						if(data.status == 'success' && data.success.session_id)
 						{
@@ -309,8 +306,8 @@
 			<p><strong>Base URL:</strong> <input type="text" id="base_url" value="" /></p>
 			
 			<h2>Request Format</h2>
-			<p>All GET parameters to actions are appended to the url as values. For example, the <code>/auth/login</code> action requires <code>username</code> and <code>password</code>, which would be formatted <input type="text" value="/auth/login/Example/5f4dcc3b5aa765d61d8327deb882cf99" />. POST parameters are passed as normal.</p>
-			<p>For requests to actions in modules requiring authentication, append the <code>session_id</code> returned from one of the <code>/auth</code> actions to the end of the url.</p>
+			<p>Parameters to actions are sent as a query string, for example, the <code>/auth/login</code> action requires <code>username</code> and <code>password</code>, which would be formatted <input type="text" value="/auth/login?username=Example&amp;password=5f4dcc3b5aa765d61d8327deb882cf99" />.</p>
+			<p>For requests to actions in modules requiring authentication, append the <code>session_id</code> returned from one of the <code>/auth</code> actions to the end of the url, before the query string.</p>
 			
 			<h2>Response Format</h2>
 			<p>All responses are in <a href="http://en.wikipedia.org/wiki/JSON" target="_blank">json</a> format.</p>
@@ -356,7 +353,7 @@
 										{{parameters}}
 											<tr class="parameter">
 												<td>{{name}}</td>
-												<td><input type="{{if name|like>password}}password{{else}}text{{/if}}" name="{{name}}" data-required="{{if required|truthy}}required{{/if}}" data-password="{{if name|like>password}}md5{{/if}}" data-method="{{method}}" class="parameter" /></td>
+												<td><input type="{{if name|like>password}}password{{else}}text{{/if}}" name="{{name}}" data-required="{{if required|truthy}}true{{/if}}" data-method="{{method}}" class="parameter" /></td>
 												<td>{{required|choose>Yes>No}}</td>
 												<td>{{type|capcase}}</td>
 												<td>{{method|upcase}}</td>
