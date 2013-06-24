@@ -20,7 +20,9 @@ class Post extends Module
 		$ret = $this->api->request('showthread.php', $data);
 		
 		$thread = parse_thread($ret);
-		$posts = parse_posts($ret);
+		$posts = $thread['posts'];
+		
+		unset($thread['posts']);
 		
 		foreach($posts as $post)
 		{
