@@ -34,9 +34,10 @@ class API
 			$this->cachestore = new SimpleCache('./cache');
 		}
 		
-		// Split the request
+		// Get the uri and split the request
 		
-		$parts = explode('/', urldecode($_SERVER['REQUEST_URI']));
+		$path_info = !empty($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : (!empty($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO'] : '');
+		$parts = explode('/', urldecode($path_info));
 		
 		// Shift off the first value if it's blank or index.php
 		
