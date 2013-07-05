@@ -3,8 +3,9 @@
 	<head>
 		<title>Facepunch API Documentation</title>
 		<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700" />
-		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/2.1.0/normalize.css" />
+		<link rel="stylesheet" href="//rawgithub.com/necolas/normalize.css/master/normalize.css" />
 		<link rel="stylesheet" href="//rawgithub.com/vitch/jScrollPane/master/style/jquery.jscrollpane.css" />
+		<link rel="stylesheet" href="//rawgithub.com/jaz303/tipsy/master/src/stylesheets/tipsy.css" />
 		<style>
 			body {
 				font-family: 'Montserrat';
@@ -205,14 +206,16 @@
 		</style>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 		<script src="//rawgithub.com/adammark/Markup.js/master/src/markup.min.js"></script>
-		<script src="//rawgithub.com/blueimp/JavaScript-MD5/master/js/md5.min.js"></script>
-		<script src="//cdnjs.cloudflare.com/ajax/libs/jScrollPane/2.0.14/jquery.jscrollpane.min.js"></script>
-		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.3/jquery.mousewheel.min.js"></script>
+		<script src="//rawgithub.com/vitch/jScrollPane/master/script/jquery.mousewheel.js"></script>
+		<script src="//rawgithub.com/vitch/jScrollPane/master/script/jquery.jscrollpane.min.js"></script>
+		<script src="//rawgithub.com/jaz303/tipsy/master/src/javascripts/jquery.tipsy.js"></script>
 		<script>
 			
 			$(function()
 			{
 				$('header').jScrollPane();
+				
+				$('.tipsy').tipsy({fade: true, gravity: 's'});
 				
 				$('.module > a').live('click', function(e)
 				{
@@ -322,7 +325,7 @@
 			<p><strong>Base URL:</strong> <input type="text" id="base_url" value="" /></p>
 			
 			<h2>Request Format</h2>
-			<p>Requests to the API are either GET or POST format, .</p>
+			<p>Requests to the API are either GET or POST format, dependant on the specific action being called.</p>
 			<p>For requests to actions in modules requiring authentication, append the <code>session_id</code> returned from one of the <code>/auth</code> actions to the end of the url.</p>
 			
 			<h2>Response Format</h2>
@@ -331,7 +334,7 @@
 			<p>Failed or erroneous request will return a response with a property of <code>status</code> set to <code>error</code> and an <code>error</code> property containing the error.</p>
 			
 			<h2>Try It Out</h2>
-			<p>Each action has a form to submit and retrieve a response from the API. Once you authenticate, your <code>session_id</code> will be stored below for future calls and automatically appended to the url.</p>
+			<p>Each action has a form to submit and retrieve a response from the API. Once you authenticate, your <code>session_id</code> will be stored below and automatically appended to the url for future calls.</p>
 			<p><strong>Session ID:</strong> <input type="text" id="session_id" value="" /></p>
 		</header>
 		<div id="container">
@@ -344,7 +347,7 @@
 			{{name|set>module_name}}
 			{{requires_authentication|set>module_requires_authentication}}
 			<div class="module">
-				<a href="#">/{{name}} <span>{{if requires_authentication|truthy}}<span title="Requires Authentication"></span>{{/if}}{{description|downcase}}</span></a>
+				<a href="#">/{{name}} <span class="tipsy" title="Requires Authentication">{{if requires_authentication|truthy}}<span></span>{{/if}}{{description|downcase}}</span></a>
 				<div class="module_actions">
 				
 				{{actions}}
