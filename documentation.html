@@ -297,6 +297,8 @@
 				{
 					$('input#session_id').val(session_id);
 				}
+				
+				$('#base_url').val(location.protocol + '//' + location.hostname);
 		
 				$.getJSON('/v1/meta/documentation', function(data)
 				{
@@ -320,8 +322,8 @@
 			<p><strong>Base URL:</strong> <input type="text" id="base_url" value="" /></p>
 			
 			<h2>Request Format</h2>
-			<p>Parameters to actions are sent as a query string, for example, the <code>/auth/login</code> action requires <code>username</code> and <code>password</code>, which would be formatted <input type="text" value="/auth/login?username=Example&amp;password=5f4dcc3b5aa765d61d8327deb882cf99" />.</p>
-			<p>For requests to actions in modules requiring authentication, append the <code>session_id</code> returned from one of the <code>/auth</code> actions to the end of the url, before the query string.</p>
+			<p>Requests to the API are either GET or POST format, .</p>
+			<p>For requests to actions in modules requiring authentication, append the <code>session_id</code> returned from one of the <code>/auth</code> actions to the end of the url.</p>
 			
 			<h2>Response Format</h2>
 			<p>All responses are in <a href="http://en.wikipedia.org/wiki/JSON" target="_blank">json</a> format.</p>
@@ -329,7 +331,7 @@
 			<p>Failed or erroneous request will return a response with a property of <code>status</code> set to <code>error</code> and an <code>error</code> property containing the error.</p>
 			
 			<h2>Try It Out</h2>
-			<p>Each action has a form to submit and retrieve a response from the API. Once you authenticate, your <code>session_id</code> will be stored below for future calls.</p>
+			<p>Each action has a form to submit and retrieve a response from the API. Once you authenticate, your <code>session_id</code> will be stored below for future calls and automatically appended to the url.</p>
 			<p><strong>Session ID:</strong> <input type="text" id="session_id" value="" /></p>
 		</header>
 		<div id="container">
@@ -351,7 +353,7 @@
 						<a href="#"><span class="method method-{{method|downcase}}">{{method}}</span> /{{module_name}}/{{name}} <span class="description">{{description|downcase}}</span></a>
 						
 						<div class="action_info">
-							<form action="/v1/{{module_name}}/{{name}}" data-requires-authentication="{{module_requires_authentication}}">
+							<form action="/v1/{{module_name}}/{{name}}" data-requires-authentication="{{module_requires_authentication}}" method="{{method}}">
 								<h2>Parameters</h2>
 								
 								{{if parameters}}

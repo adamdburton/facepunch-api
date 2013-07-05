@@ -46,7 +46,7 @@ class Thread extends Module
 		Description: Reply to a Thread
 		Method: POST
 		Parameter: id | required | integer | Thread ID
-		Parameter: subscribe | optional | integer | Whether to subscribe to the thread (defaults to keeping subscribed if already)
+		Parameter: subscribe | optional | integer | Whether to subscribe to the thread
 		Parameter: message | required | string | The message to submit
 		Return: sent | boolean | Reply sent or failed
 	**/
