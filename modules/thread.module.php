@@ -71,9 +71,9 @@ class Thread extends Module
 	**/
 	public function is_subscribed($id)
 	{
-		$subscribed_threads = $this->subscribed('all');
+		$subscribed_threads = $this->subscribed();
 		
-		foreach($subscribed_threads as $thread)
+		foreach($subscribed_threads['threads'] as $thread)
 		{
 			if($thread['thread_id'] == $id)
 			{
