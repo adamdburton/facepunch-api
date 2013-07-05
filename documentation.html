@@ -85,6 +85,12 @@
 				color: #999999;
 			}
 			
+			.module > a > span > span {
+				background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAANBAMAAACN24kIAAAAA3NCSVQICAjb4U/gAAAALVBMVEX///+SlJeSlJeSlJeSlJeSlJeSlJeSlJeSlJeSlJeSlJeSlJeSlJeSlJeSlJc/yMzwAAAAD3RSTlMAESIzRFV3iJmqu8zd7v+wyu2mAAAACXBIWXMAAAsSAAALEgHS3X78AAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1cbXjNgAAABZ0RVh0Q3JlYXRpb24gVGltZQAwOS8xNC8xMVdbHYMAAABSSURBVAiZY2BgnndDgIGBwe7tu4tAal2D5AsGBsY3DIx3GRjY3wGBA4Peu9fn3h1g8Hu3QfbdAyC1EUI9qQNTTyHU23tAigekYQIDY3p5eRkDABw8LG2FnbrcAAAAAElFTkSuQmCC);
+				width: 11px;
+				height: 13px;
+			}
+			
 			.module_actions {
 				display: none;
 			}
@@ -345,7 +351,7 @@
 				{{actions}}
 					{{name|set>action_name}}
 					<div class="action">
-						<a href="#"><span class="method method-{{method|downcase}}">{{method}}</span> /{{module_name}}/{{name}} <span class="description">{{description|downcase}}</span></a>
+						<a href="#"><span class="method method-{{method|downcase}}">{{method}}</span> /{{module_name}}/{{name}} <span class="description">{{if module_requires_authentication}}{{/if}}<span class="tipsy" title="Requires Authentication"></span>{{description|downcase}}</span></a>
 						
 						<div class="action_info">
 							<form action="/v1/{{module_name}}/{{name}}" data-requires-authentication="{{module_requires_authentication}}" method="{{method}}">
