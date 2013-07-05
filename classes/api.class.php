@@ -403,7 +403,8 @@ function get_function_info($object, $function)
 				{
 					if($p->getName() == $match[1])
 					{
-						$param['default'] = $p->getDefaultValue();
+						$default = $p->getDefaultValue();
+						$param['default'] = is_bool() ? (int) $default : $default;
 					}
 				}
 			}
