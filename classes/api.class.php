@@ -313,12 +313,19 @@ class API
 		
 		$t = microtime(true);
 		$req = request(FACEPUNCH_URL . $url, $data, $method, $headers, $returnheaders, $this->auth->_get_cookies());
+		
 		$this->response_time += microtime(true) - $t;
 		
 		// Check if there was an error with the request
 		
 		if($req === false)
 		{
+			if(filemtime('./down.txt') < strtotime('-1 hour'))
+			{
+				pushover('Facepunch Unavailable!');
+				touch('./down.txt');
+			}
+			
 			$this->error('Service unavailable: ' . $url);
 		}
 		
