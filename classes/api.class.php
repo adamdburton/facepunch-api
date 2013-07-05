@@ -251,7 +251,7 @@ class API
 		}
 		
 		ob_start('ob_gzhandler');
-		$output = json_encode(array_iconv($data));
+		$output = json_encode($data);
 		
 		if(isset($_GET['callback']))
 		{
@@ -566,6 +566,7 @@ function is_booleany($var)
 	return $var == 1 || $var == 0;
 }
 
+// Fucked
 function array_iconv(&$items)
 {
 	foreach ($items as &$item)
