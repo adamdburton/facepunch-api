@@ -363,7 +363,7 @@
 			{{name|set>module_name}}
 			{{requires_authentication|set>module_requires_authentication}}
 			<div class="module">
-				<a href="#">/{{name}} <span>{{if module_requires_authentication}}{{/if}}<span rel="tipsy" title="Requires Authentication"></span> {{description|downcase}}</span></a>
+				<a href="#">/{{name}} <span>{{if module_requires_authentication}}<span rel="tipsy" title="Requires Authentication"></span> {{/if}}{{description|downcase}}</span></a>
 				<div class="module_actions">
 				
 				{{actions}}
@@ -378,7 +378,7 @@
 								{{if parameters}}
 									<table class="action_parameters">
 										<tr>
-											<th style="width: 15%;">Parameter</th>
+											<th style="width: 10%;">Parameter</th>
 											<th style="width: 15%;">Value</th>
 											<th style="width: 10%;">Required</th>
 											<th style="width: 10%;">Default</th>
