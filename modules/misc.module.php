@@ -1,6 +1,6 @@
 <?php
 
-class General extends Module
+class Misc extends Module
 {
 	protected $description = 'Miscellaneous actions';
 	protected $requires_authentication = true;

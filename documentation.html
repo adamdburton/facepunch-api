@@ -193,6 +193,10 @@
 				color: #333;
 			}
 			
+			.response_container {
+				display: none;
+			}
+			
 			.response {
 				-webkit-box-sizing: border-box;
 				-moz-box-sizing: border-box;
@@ -244,7 +248,8 @@
 				$('form').live('submit', function(e)
 				{
 					e.preventDefault();
-				
+					
+					var $response_container = $(this).parent().find('.response_container');
 					var $response = $(this).parent().find('.response').html('');
 					var url = $(this).attr('action');
 					var method = $(this).attr('method');
@@ -304,8 +309,9 @@
 								$('input#session_id').val('');
 								localStorage.removeItem('session_id');
 							}
-					
+							
 							$response.html(JSON.stringify(data, undefined, '\t'));
+							$response_container.slideDown();
 						}
 					});
 				});
@@ -374,7 +380,6 @@
 						<div class="action_info">
 							<form action="/v1/{{module_name}}/{{name}}" data-requires-authentication="{{module_requires_authentication}}" method="{{method}}">
 								<h2>Parameters</h2>
-								
 								{{if parameters}}
 									<table class="action_parameters">
 										<tr>
@@ -405,7 +410,6 @@
 						
 							{{if returns}}
 								<h2>Return Values</h2>
-							
 								<table class="action_parameters">
 									<tr>
 										<th style="width: 15%;">Property</th>
@@ -424,9 +428,10 @@
 								<p>There are no return values for this action.</p>
 							{{/if}}
 							
-							<h2>Response</h2>
-							
-							<textarea class="response"></textarea>
+							<div class="response_container">
+								<h2>Response</h2>
+								<textarea class="response"></textarea>
+							</div>
 						</div>
 					</div>
 				{{/actions}}
