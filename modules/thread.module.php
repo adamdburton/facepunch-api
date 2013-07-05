@@ -129,7 +129,7 @@ class Thread extends Module
 		
 		$ret = $this->api->request('subscription.php');
 		
-		return array('threads' => parse_forum($ret, false));
+		return parse_forum($ret, false);
 	}
 	
 	/**
