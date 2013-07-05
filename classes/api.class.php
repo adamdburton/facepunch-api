@@ -326,7 +326,7 @@ class API
 				touch('./down.txt');
 			}
 			
-			$this->error('Service unavailable: ' . $url);
+			$this->error('Service unavailable. Facepunch is down or we can\'t connect. We\'ve been notified.');
 		}
 		
 		// Check if we were shown an error message from Facepunch
