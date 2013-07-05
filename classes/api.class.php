@@ -237,6 +237,7 @@ class API
 			);
 		
 			$json['system'] = array(
+				'version' => $this->api_version,
 				'module' => $this->module,
 				'action' => $this->action,
 				'parameters' => $this->parameters
