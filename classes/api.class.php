@@ -576,7 +576,7 @@ function array_iconv(&$items)
 		}
 		else
 		{
-			$item = iconv('UTF-8', 'ISO-8859-1', $item);
+			$item = iconv('UTF-8', 'ISO-8859-1', utf8_encode($item));
 		}
 	}
 }
