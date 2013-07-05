@@ -544,3 +544,8 @@ function plural($var)
 {
 	return $var == 1 ? '' : 's';
 }
+
+function is_booleany($var)
+{
+	return $var == 1 || $var == 0;
+}
