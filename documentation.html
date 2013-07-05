@@ -152,13 +152,15 @@
 			
 			.action form input[type="submit"] {
 				border: 0;
-				background: #CE0000;
+				background: #666;
 				color: #FFF;
 				text-transform: uppercase;
+				display: inline-block;
+				padding: 5px 10px;
 			}
 			
 			.action form input[type="submit"]:hover {
-				background: #999999;
+				background: #CE0000;
 			}
 			
 			.action_info {
@@ -245,6 +247,7 @@
 				
 					var $response = $(this).parent().find('.response').html('');
 					var url = $(this).attr('action');
+					var method = $(this).attr('method');
 					var requires_authentication = $(this).data('requires-authentication');
 					var session_id = $('input#session_id').val();
 				
@@ -253,8 +256,7 @@
 						return alert('This module requires authentication. Please authenticate first.');
 					}
 				
-					var get = {};
-					var post = {};
+					var params = {};
 				
 					$(this).find('input.parameter').each(function()
 					{
@@ -270,14 +272,7 @@
 						
 						if(value != '')
 						{
-							if($field.data('method') == 'get')
-							{
-								get[name] = value;
-							}
-							else
-							{
-								post[name] = value;
-							}
+							params[name] = value;
 						}
 					});
 				
@@ -286,21 +281,32 @@
 						url += '/' + session_id;
 					}
 					
-					$.post(url + '?' + $.param(get), post, function(data)
-					{
-						if(data.status == 'success' && data.success.session_id)
+					$.ajax({
+						url: url,
+						type: method,
+						cache: false,
+						data: params,
+						dataType: 'json',
+						error: function(jqXHR, status, error)
 						{
-							$('input#session_id').val(data.success.session_id);
-							localStorage.setItem('session_id', data.success.session_id);
-						}
+							alert('Something went wrong! ' + status + ' ' + error)
+						},
+						success: function(data)
+						{
+							if(data.status == 'success' && data.success.session_id)
+							{
+								$('input#session_id').val(data.success.session_id);
+								localStorage.setItem('session_id', data.success.session_id);
+							}
 						
-						if(data.status == 'error' && data.error == 'Invalid session or session has expired. Please authenticate.')
-						{
-							$('input#session_id').val('');
-							localStorage.removeItem('session_id');
-						}
+							if(data.status == 'error' && data.error == 'Invalid session or session has expired. Please authenticate.')
+							{
+								$('input#session_id').val('');
+								localStorage.removeItem('session_id');
+							}
 					
-						$response.html(JSON.stringify(data, undefined, '\t'));
+							$response.html(JSON.stringify(data, undefined, '\t'));
+						}
 					});
 				});
 				

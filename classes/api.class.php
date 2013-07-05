@@ -183,6 +183,7 @@ class API
 		
 		$json = $this->debug($json);
 		
+		ob_start('ob_gzhandler');
 		die(json_encode($json));
 	}
 
@@ -200,56 +201,67 @@ class API
 				$error = $e->getMessage();
 				$stack_trace = $e->getTraceAsString();
 				
-				$json = array(
+				$data = array(
 					'status' => 'error',
 					'error' => $error,
 					'stack_trace' => $stack_trace
 				);
 				
-				$json = $this->debug($json);
-				
-				die(json_encode($json));
+				$this->output($data);
 			}
 		}
 		else
 		{
-			$json = array(
+			$data = array(
 				'status' => 'error',
 				'error' => $string,
 			);
 			
-			$json = $this->debug($json);
-			
-			die(json_encode($json));
+			$this->output($data);
 		}
 	}
 	
-	function debug($json)
+	function debug($data)
 	{
 		global $start_time;
 		
+		$time_taken = microtime(true) - $start_time;
+		$response_time = $this->response_time;
+		$processing_time = $time_taken - $response_time;
+		
+		$data['stats'] = array(
+			'time_taken' => number_format($time_taken, 10),
+			'response_time' => number_format($response_time, 10),
+			'processing_time' => number_format($processing_time, 10),
+			'memory_usage' => bcdiv(memory_get_peak_usage(), 1048576, 2) . ' MB'
+		);
+	
+		$data['system'] = array(
+			'version' => $this->api_version,
+			'module' => $this->module,
+			'action' => $this->action,
+			'parameters' => $this->parameters
+		);
+		
+		return $data;
+	}
+	
+	function output($data = array())
+	{
 		if(DEBUG)
 		{
-			$time_taken = microtime(true) - $start_time;
-			$response_time = $this->response_time;
-			$processing_time = $time_taken - $response_time;
-			
-			$json['stats'] = array(
-				'time_taken' => number_format($time_taken, 10),
-				'response_time' => number_format($response_time, 10),
-				'processing_time' => number_format($processing_time, 10),
-				'memory_usage' => bcdiv(memory_get_peak_usage(), 1048576, 2) . ' MB'
-			);
-		
-			$json['system'] = array(
-				'version' => $this->api_version,
-				'module' => $this->module,
-				'action' => $this->action,
-				'parameters' => $this->parameters
-			);
+			$data = $this->debug($data);
 		}
 		
-		return $json;
+		ob_start('ob_gzhandler');
+		$output = json_encode($data);
+		
+		if($_GET['callback'])
+		{
+			$output = $_GET['callback'] . '(' . $output . ')';
+		}
+		
+		die($output);
 	}
 	
 	function get_modules()
