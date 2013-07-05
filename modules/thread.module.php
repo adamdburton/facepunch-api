@@ -63,7 +63,7 @@ class Thread extends Module
 		
 		$ret = $this->api->request('newreply.php?do=postreply&t=' . $id, $data, 'POST');
 		
-		return true;
+		return array('sent' => true);
 	}
 	
 	/**
