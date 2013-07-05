@@ -47,10 +47,8 @@ class Thread extends Module
 		Parameter: message | required | string | post | The message to submit
 		Return: sent | boolean | Reply sent or failed
 	**/
-	public function reply($id, $subscribe = false)
+	public function reply($id, $subscribe = false, $message)
 	{
-		$message = $_POST['message'];
-		
 		$data = array(
 			'message' => $message,
 			't' => $id,
@@ -154,10 +152,8 @@ class Thread extends Module
 		Parameter: message | required | string | post | Thread message
 		Return: created | boolean | Thread created or not
 	**/
-	public function create($forum_id, $subject, $icon_id)
+	public function create($forum_id, $subject, $icon_id, $message)
 	{
-		$message = $_POST['message'];
-		
 		$data = array(
 			'subject' => $subject,
 			'message' => $message,
@@ -175,7 +171,7 @@ class Thread extends Module
 		return array('created' => true);
 	}
 	
-	public function _get_security_data($thread_id)
+	public function _get_security_data($id)
 	{
 		$data = array(
 			't' => $id
