@@ -254,7 +254,7 @@ class API
 		}
 		
 		ob_start('ob_gzhandler');
-		$output = json_encode($data);
+		$output = json_encode(array_iconv($data));
 		
 		if(isset($_GET['callback']))
 		{
@@ -567,4 +567,19 @@ function plural($var)
 function is_booleany($var)
 {
 	return $var == 1 || $var == 0;
+}
+
+function array_iconv(&$items, $func)
+{
+	foreach ($items as &$item)
+	{
+		if(is_array($item))
+		{
+			array_iconv($item, $func);
+		}
+		else
+		{
+			$item = iconv('UTF-8', 'ISO-8859-1', $item);
+		}
+	}
 }
