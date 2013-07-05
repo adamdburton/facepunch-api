@@ -256,7 +256,7 @@ class API
 		ob_start('ob_gzhandler');
 		$output = json_encode($data);
 		
-		if($_GET['callback'])
+		if(isset($_GET['callback']))
 		{
 			$output = $_GET['callback'] . '(' . $output . ')';
 		}
