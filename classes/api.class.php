@@ -176,15 +176,12 @@ class API
 	
 	function success($data = array())
 	{
-		$json = array(
+		$data = array(
 			'status' => 'success',
 			'success' => $data
 		);
 		
-		$json = $this->debug($json);
-		
-		ob_start('ob_gzhandler');
-		die(json_encode($json));
+		$this->output($data);
 	}
 
 	function error($string = 'Internal API error.')
