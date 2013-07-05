@@ -345,13 +345,13 @@
 			{{name|set>module_name}}
 			{{requires_authentication|set>module_requires_authentication}}
 			<div class="module">
-				<a href="#">/{{name}} <span>{{description|downcase}}</span></a>
+				<a href="#">/{{name}} <span>{{if module_requires_authentication}}{{/if}}<span class="tipsy" title="Requires Authentication"></span> {{description|downcase}}</span></a>
 				<div class="module_actions">
 				
 				{{actions}}
 					{{name|set>action_name}}
 					<div class="action">
-						<a href="#"><span class="method method-{{method|downcase}}">{{method}}</span> /{{module_name}}/{{name}} <span class="description">{{if module_requires_authentication}}{{/if}}<span class="tipsy" title="Requires Authentication"></span>{{description|downcase}}</span></a>
+						<a href="#"><span class="method method-{{method|downcase}}">{{method}}</span> /{{module_name}}/{{name}} <span class="description">{{description|downcase}}</span></a>
 						
 						<div class="action_info">
 							<form action="/v1/{{module_name}}/{{name}}" data-requires-authentication="{{module_requires_authentication}}" method="{{method}}">
