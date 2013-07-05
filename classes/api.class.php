@@ -393,6 +393,7 @@ function get_function_info($object, $function)
 			if($match[2] == 'required')
 			{
 				$req_param_names[] = $match[1];
+				$param['default'] = '';
 			}
 			else
 			{
