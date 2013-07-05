@@ -213,8 +213,6 @@
 			{
 				$('header').jScrollPane();
 				
-				$('.tipsy').tipsy({fade: true, gravity: 's'});
-				
 				$('.module > a').live('click', function(e)
 				{
 					e.preventDefault();
@@ -290,7 +288,7 @@
 							localStorage.removeItem('session_id');
 						}
 					
-						$response.html(JSON.stringify(data, undefined, '\t'))
+						$response.html(JSON.stringify(data, undefined, '\t'));
 					});
 				});
 				
@@ -307,6 +305,8 @@
 					{
 						var output = Mark.up($('#template').contents().text(), { modules: data.success.modules });
 						$('#container').append(output);
+						
+						$('.[rel=tipsy]').tipsy({fade: true, gravity: 's'});
 					}
 					else
 					{
@@ -345,7 +345,7 @@
 			{{name|set>module_name}}
 			{{requires_authentication|set>module_requires_authentication}}
 			<div class="module">
-				<a href="#">/{{name}} <span>{{if module_requires_authentication}}{{/if}}<span class="tipsy" title="Requires Authentication"></span> {{description|downcase}}</span></a>
+				<a href="#">/{{name}} <span>{{if module_requires_authentication}}{{/if}}<span rel="tipsy" title="Requires Authentication"></span> {{description|downcase}}</span></a>
 				<div class="module_actions">
 				
 				{{actions}}
