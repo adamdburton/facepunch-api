@@ -360,6 +360,7 @@
 											<th style="width: 15%;">Parameter</th>
 											<th style="width: 15%;">Value</th>
 											<th style="width: 10%;">Required</th>
+											<th style="width: 10%;">Default</th>
 											<th style="width: 10%;">Type</th>
 											<th>Description</th>
 										</tr>
@@ -368,6 +369,7 @@
 												<td>{{name}}</td>
 												<td><input type="{{if name|like>password}}password{{else}}text{{/if}}" name="{{name}}" data-required="{{if required|truthy}}true{{/if}}" class="parameter" /></td>
 												<td>{{required|choose>Yes>No}}</td>
+												<td>{{default}}</td>
 												<td>{{type|capcase}}</td>
 												<td>{{description}}</td>
 											</tr>
