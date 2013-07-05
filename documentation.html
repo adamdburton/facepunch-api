@@ -243,6 +243,7 @@
 					e.preventDefault();
 					$('.action.open > a').not(this).click();
 					$(this).parent().toggleClass('open').find('.action_info').toggle();
+					$(this).parent().find('.response_container').hide();
 				});
 			
 				$('form').live('submit', function(e)
