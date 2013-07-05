@@ -6,6 +6,7 @@ class Forum extends Module
 	
 	/**
 		Description: Gets all top level forums
+		Method: GET
 		Return: forums | array | Array of forums
 	**/
 	public function index()
@@ -17,10 +18,11 @@ class Forum extends Module
 	
 	/**
 		Description: Gets threads from a Forum
-		Parameter: id | required | integer | get | Forum ID
-		Parameter: page | optional | integer | get | Page number
-		Parameter: sort | optional | string | get | Sorting of returned threads: title, postusername, lastpost, replycount, views
-		Parameter: order | optional | string | get | Ordering of returned threads: acc, desc
+		Method: GET
+		Parameter: id | required | integer | Forum ID
+		Parameter: page | optional | integer | Page number
+		Parameter: sort | optional | string | Sorting of returned threads: title, postusername, lastpost, replycount, views
+		Parameter: order | optional | string | Ordering of returned threads: acc, desc
 		Return: subforums | array | Array of subforums
 		Return: threads | array | Array of threads
 	**/

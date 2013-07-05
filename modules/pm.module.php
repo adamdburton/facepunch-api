@@ -7,7 +7,8 @@ class PM extends Module
 	
 	/**
 		Description: Gets a Private Message by ID
-		Parameter: id | required | integer | get | PM ID
+		Method: GET
+		Parameter: id | required | integer | PM ID
 		Return: pm | object | private message
 	**/
 	public function id($id)
@@ -24,7 +25,8 @@ class PM extends Module
 	
 	/**
 		Description: Deletes a Private Message by ID
-		Parameter: id | required | integer | get | PM ID
+		Method: POST
+		Parameter: id | required | integer | PM ID
 		Return: deleted | boolean | Private Message deleted or failed
 	**/
 	public function delete($id)
@@ -47,6 +49,7 @@ class PM extends Module
 	
 	/**
 		Description: Gets Private Messages folders
+		Method: GET
 		Return: folders | array | Array of folders
 	**/
 	public function folders()
@@ -58,7 +61,8 @@ class PM extends Module
 	
 	/**
 		Description: Gets Private Messages from a folder
-		Parameter: id | optional | integer | get | Folder ID
+		Method: GET
+		Parameter: id | optional | integer | Folder ID
 		Return: pms | array | Array of private messages
 	**/
 	public function folder($id = 0)
@@ -74,6 +78,7 @@ class PM extends Module
 	
 	/**
 		Description: Gets Private Message Icons
+		Method: GET
 		Return: icons | array | Array of icons
 	**/
 	public function icons()
@@ -85,16 +90,15 @@ class PM extends Module
 	
 	/**
 		Description: Send a Private Message to a user
-		Parameter: recipients | required | string | get | Semi-colon seperated list of Facepunch Username
-		Parameter: subject | required | string | get | The message subject
-		Parameter: icon | required | integer | get | The message icon ID
-		Parameter: message | required | string | post | The message to send
+		Method: POST
+		Parameter: recipients | required | string | Semi-colon seperated list of Facepunch Username
+		Parameter: subject | required | string | The message subject
+		Parameter: icon | required | integer | The message icon ID
+		Parameter: message | required | string | The message to send
 		Return: sent | boolean | Message sent or failed
 	**/
-	public function send($recipients, $subject, $icon)
+	public function send($recipients, $subject, $icon, $message)
 	{
-		$message = $_POST['message'];
-		
 		$data = array(
 			'do' => 'insertpm',
 			'recipients' => $recipients,

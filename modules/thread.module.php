@@ -7,8 +7,9 @@ class Thread extends Module
 	
 	/**
 		Description: Gets a Thread by ID
-		Parameter: id | required | integer | get | Thread ID
-		Parameter: page | optional | integer | get | Page number
+		Method: GET
+		Parameter: id | required | integer | Thread ID
+		Parameter: page | optional | integer | Page number
 		Return: thread | object | Thread with array of posts
 	**/
 	public function id($id, $page = 1)
@@ -25,7 +26,8 @@ class Thread extends Module
 	
 	/**
 		Description: Gets the first page of a Thread by ID with unread posts
-		Parameter: id | required | integer | get | Thread ID
+		Method: GET
+		Parameter: id | required | integer | Thread ID
 		Return: thread | object | Thread with array of posts
 	**/
 	public function unread($id)
@@ -42,9 +44,10 @@ class Thread extends Module
 	
 	/**
 		Description: Reply to a Thread
-		Parameter: id | required | integer | get | Thread ID
-		Parameter: subscribe | optional | integer | get | Whether to subscribe to the thread
-		Parameter: message | required | string | post | The message to submit
+		Method: POST
+		Parameter: id | required | integer | Thread ID
+		Parameter: subscribe | optional | integer | Whether to subscribe to the thread
+		Parameter: message | required | string | The message to submit
 		Return: sent | boolean | Reply sent or failed
 	**/
 	public function reply($id, $subscribe = false, $message)
@@ -66,7 +69,8 @@ class Thread extends Module
 	
 	/**
 		Description: Gets whether the user is subscribed to a thread
-		Parameter: id | required | integer | get | Thread ID
+		Method: GET
+		Parameter: id | required | integer | Thread ID
 		Return: subscribed | boolean | User subscribed or not
 	**/
 	public function is_subscribed($id)
@@ -86,6 +90,7 @@ class Thread extends Module
 	
 	/**
 		Description: Gets read threads
+		Method: GET
 		Return: threads | array | Array of threads
 	**/
 	public function read()
@@ -107,6 +112,7 @@ class Thread extends Module
 	
 	/**
 		Description: Gets popular threads
+		Method: GET
 		Return: threads | array | Array of threads
 	**/
 	public function popular()
@@ -118,7 +124,8 @@ class Thread extends Module
 	
 	/**
 		Description: Gets subscribed threads
-		Parameter: folder_id | optional | integer | get | Subscriptions Folder ID
+		Method: GET
+		Parameter: folder_id | optional | integer | Subscriptions Folder ID
 		Return: threads | array | Array of threads
 	**/
 	public function subscribed($folder_id = 0)
@@ -134,7 +141,8 @@ class Thread extends Module
 	
 	/**
 		Description: Gets thread icons
-		Parameter: forum_id | required | integer | get | Forum ID
+		Method: GET
+		Parameter: forum_id | required | integer | Forum ID
 		Return: icons | array | Array of icons
 	**/
 	public function icons($forum_id)
@@ -146,10 +154,11 @@ class Thread extends Module
 	
 	/**
 		Description: Creates a new Thread
-		Parameter: forum_id | required | integer | get | Forum ID
-		Parameter: subject | required | string | get | Thread subject
-		Parameter: icon_id | required | integer | get | Thread icon ID
-		Parameter: message | required | string | post | Thread message
+		Method: POST
+		Parameter: forum_id | required | integer | Forum ID
+		Parameter: subject | required | string | Thread subject
+		Parameter: icon_id | required | integer | Thread icon ID
+		Parameter: message | required | string | Thread message
 		Return: created | boolean | Thread created or not
 	**/
 	public function create($forum_id, $subject, $icon_id, $message)

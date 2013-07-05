@@ -120,6 +120,11 @@ class API
 		
 		$info = get_function_info($module, $action);
 		
+		if($_SERVER['REQUEST_METHOD'] != $info['method'])
+		{
+			$this->error('Incorrect HTTP method: ' . $_SERVER['REQUEST_METHOD'] . '. ' . $info['method'] . ' is required.');
+		}
+		
 		$available_params = array();
 		$missing_params = array();
 		
@@ -138,13 +143,13 @@ class API
 				continue;
 			}
 			
-			if($param['method'] == 'get')
+			if($info['method'] == 'GET')
 			{
 				$available_params[$name] = $_GET[$name];
 				continue;
 			}
 		
-			if($param['method'] == 'post')
+			if($info['method'] == 'POST')
 			{
 				$available_params[$name] = $_POST[$name];
 				continue;
@@ -366,6 +371,7 @@ function get_function_info($object, $function)
 	$comment = trim(substr($function_reflection->getDocComment(), 4, -4));
 	
 	$description = quick_match('Description\: ([A-Za-z0-9., ]+)', $comment);
+	$method = quick_match('Method\: (GET|POST)', $comment);
 	$return = quick_match('Return\: (.+)', $comment);
 	
 	$parameters = array();
@@ -373,7 +379,7 @@ function get_function_info($object, $function)
 	$req_param_names = array();
 	$opt_param_names = array();
 	
-	if(preg_match_all('/Parameter\: ([a-z_]+) \| (required|optional) \| (string|integer|array|object|boolean) \| (get|post) \| ([A-Za-z0-9., ]+)/', $comment, $matches, PREG_SET_ORDER))
+	if(preg_match_all('/Parameter\: ([a-z_]+) \| (required|optional) \| (string|integer|array|object|boolean) \| ([A-Za-z0-9., ]+)/', $comment, $matches, PREG_SET_ORDER))
 	{
 		foreach($matches as $match)
 		{
@@ -381,8 +387,7 @@ function get_function_info($object, $function)
 				'name' => $match[1],
 				'required' => $match[2] == 'required' ? true : false,
 				'type' => $match[3],
-				'method' => $match[4],
-				'description' => $match[5]
+				'description' => $match[4]
 			);
 			
 			if($match[2] == 'required')
@@ -423,6 +428,7 @@ function get_function_info($object, $function)
 	$return = array(
 		'name' => $function,
 		'description' => $description,
+		'method' => $method,
 		'parameters' => $parameters,
 		'required_parameters' => $req_param_names,
 		'optional_parameters' => $opt_param_names,

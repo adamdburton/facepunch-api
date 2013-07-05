@@ -9,8 +9,9 @@ class Auth extends Module
 	
 	/**
 		Description: Authenticate with username and password
-		Parameter: username | required | string | get | Facepunch username
-		Parameter: password | required | string | get | Facepunch password MD5 hash
+		Method: POST
+		Parameter: username | required | string | Facepunch username
+		Parameter: password | required | string | Facepunch password MD5 hash
 		Return: session_id | string | Session ID to use for subsequent requests
 		Return: user_id | integer | The logged in user's ID
 	**/
@@ -56,9 +57,10 @@ class Auth extends Module
 	
 	/**
 		Description: Authenticate with cookies
-		Parameter: userid | required | string | get | Facepunch User ID
-		Parameter: password | required | string | get | Facepunch password MD5 hash
-		Parameter: sessionhash | required | string | get | Facepunch session hash
+		Method: POST
+		Parameter: userid | required | string | Facepunch User ID
+		Parameter: password | required | string | Facepunch password MD5 hash
+		Parameter: sessionhash | required | string | Facepunch session hash
 		Return: session_id | string | Session ID to use for subsequent requests
 		Return: user_id | integer | The logged in user's ID
 	**/

@@ -7,7 +7,8 @@ class Post extends Module
 	
 	/**
 		Description: Gets a Post by ID
-		Parameter: id | required | integer | get | Post ID
+		Method: GET
+		Parameter: id | required | integer | Post ID
 		Return: thread | object | Thread
 		Return: post | object | Post
 	**/
@@ -37,7 +38,8 @@ class Post extends Module
 	
 	/**
 		Description: Gets BBCode to quote a Post by ID
-		Parameter: id | required | integer | get | Post ID
+		Method: GET
+		Parameter: id | required | integer  | Post ID
 		Return: quote | string | BBCode quote for the Post
 	**/
 	public function quote($id)
@@ -56,7 +58,8 @@ class Post extends Module
 	
 	/**
 		Description: Gets BBCode to edit a Post by ID
-		Parameter: id | required | integer | get | Post ID
+		Method: GET
+		Parameter: id | required | integer | Post ID
 		Return: edit | string | BBCode for the Post
 	**/
 	public function edit($id)
@@ -76,20 +79,20 @@ class Post extends Module
 	
 	/**
 		Description: Updates a Post by ID
-		Parameter: id | required | integer | get | Post ID
-		Parameter: message | required | string | post | Post Message
+		Method: POST
+		Parameter: id | required | integer | Post ID
+		Parameter: message | required | string | Post Message
+		Parameter: reason | optional | string | Reason for editing
 		Return: updated | boolean | Post updated or not
 	**/
-	public function update($id)
+	public function update($id, $message, $reason = '')
 	{
-		$message = $_POST['message'];
-		
 		$data = array(
 			'postid' => $id,
 			'message' => $message,
 			'do' => 'updatepost',
 			'parseurl' => 1,
-			'reason' => ''
+			'reason' => $reason
 		);
 		
 		$data = array_merge($data, $this->_get_security_data($id));
@@ -101,9 +104,10 @@ class Post extends Module
 	
 	/**
 		Description: Rate a Post
-		Parameter: id | required | integer | get | Post ID
-		Parameter: rating | required | integer | get | Rating ID
-		Parameter: key | required | string | get | Rating key
+		Method: POST
+		Parameter: id | required | integer | Post ID
+		Parameter: rating | required | integer | Rating ID
+		Parameter: key | required | string | Rating key
 		Return: rated | boolean | Post rated or not
 		Return: ratings | array | Array of updated ratings
 	**/

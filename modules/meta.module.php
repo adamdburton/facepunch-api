@@ -7,6 +7,7 @@ class Meta extends Module
 	
 	/**
 		Description: Get API documentation
+		Method: GET
 		Return: modules | array | Array of API modules and actions documentation
 	**/
 	function documentation()

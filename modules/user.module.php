@@ -6,7 +6,8 @@ class User extends Module
 	
 	/**
 		Description: Gets a User by ID
-		Parameter: id | required | integer | get | Facepunch User ID
+		Method: GET
+		Parameter: id | required | integer | Facepunch User ID
 		Return: user | object | User
 	**/
 	public function id($id)
@@ -22,7 +23,8 @@ class User extends Module
 	
 	/**
 		Description: Gets a User by Username
-		Parameter: username | required | string | get | Facepunch Username
+		Method: GET
+		Parameter: username | required | string | Facepunch Username
 		Return: user | object | User
 	**/
 	public function username($username)
@@ -38,14 +40,14 @@ class User extends Module
 	
 	/**
 		Description: Adds a visitor message to a user profile
-		Parameter: id | required | integer | get | Facepunch User ID
-		Parameter: message | required | string | post | The message to submit
+		Method: POST
+		Parameter: id | required | integer | Facepunch User ID
+		Parameter: message | required | string | The message to submit
 		Return: sent | boolean | Message sent or failed
 	**/
-	public function message($id)
+	public function message($id, $message)
 	{
-		$message = $_POST['message'];
-		
+		// TODO: This
 		//$ret = $this->api->request('member.php', $data, 'POST');
 		
 		return true;

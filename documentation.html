@@ -120,9 +120,15 @@
 				margin-bottom: 20px;
 			}
 			
-			.action span {
+			.action > a > span.description {
 				float: right;
 				color: #666;
+			}
+			
+			.action > a > span.method {
+				display: inline-block;
+				padding: 5px 10px;
+				background: red;
 			}
 			
 			.action form {
@@ -334,7 +340,7 @@
 				{{actions}}
 					{{name|set>action_name}}
 					<div class="action">
-						<a href="#">/{{module_name}}/{{name}} <span>{{description|downcase}}</span></a>
+						<a href="#"><span class="method method-{{method|downcase}}">{{method}}</span> /{{module_name}}/{{name}} <span class="description">{{description|downcase}}</span></a>
 						
 						<div class="action_info">
 							<form action="/v1/{{module_name}}/{{name}}" data-requires-authentication="{{module_requires_authentication}}">
@@ -347,16 +353,14 @@
 											<th style="width: 15%;">Value</th>
 											<th style="width: 10%;">Required</th>
 											<th style="width: 10%;">Type</th>
-											<th style="width: 10%;">Method</th>
 											<th>Description</th>
 										</tr>
 										{{parameters}}
 											<tr class="parameter">
 												<td>{{name}}</td>
-												<td><input type="{{if name|like>password}}password{{else}}text{{/if}}" name="{{name}}" data-required="{{if required|truthy}}true{{/if}}" data-method="{{method}}" class="parameter" /></td>
+												<td><input type="{{if name|like>password}}password{{else}}text{{/if}}" name="{{name}}" data-required="{{if required|truthy}}true{{/if}}" class="parameter" /></td>
 												<td>{{required|choose>Yes>No}}</td>
 												<td>{{type|capcase}}</td>
-												<td>{{method|upcase}}</td>
 												<td>{{description}}</td>
 											</tr>
 										{{/parameters}}

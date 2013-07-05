@@ -7,6 +7,7 @@ class General extends Module
 	
 	/**
 		Description: Gets any PM notifications
+		Method: GET
 		Return: notifications | array | Array of notifications
 	**/
 	public function notifications()
@@ -18,7 +19,8 @@ class General extends Module
 	
 	/**
 		Description: Gets ticker information
-		Parameter: lasttime | optional | integer | get | Unix timestamp
+		Method: GET
+		Parameter: lasttime | optional | integer | Unix timestamp
 		Return: events | array | Array of events
 	**/
 	public function ticker($lasttime = false)
@@ -36,8 +38,9 @@ class General extends Module
 	
 	/**
 		Description: Gets eventlog information
-		Parameter: type | optional | string | get | The event type
-		Parameter: user_id | optional | integer | get | User DI for events
+		Method: GET
+		Parameter: type | optional | string | The event type
+		Parameter: user_id | optional | integer | User ID for events
 		Return: events | array | Array of events
 	**/
 	public function events($type = false, $user_id = false)
