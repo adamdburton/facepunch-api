@@ -33,7 +33,7 @@ define('DEBUG', true);
 if(DEBUG)
 {
 	//ini_set('display_errors', 1);
-	set_error_handler('pushover_errors', E_ALL ^ E_NOTICE);
+	set_error_handler('pushover_errors', E_ALL);
 }
 
 $start_time = microtime(true);
