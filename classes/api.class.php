@@ -566,13 +566,13 @@ function is_booleany($var)
 	return $var == 1 || $var == 0;
 }
 
-function array_iconv(&$items, $func)
+function array_iconv(&$items)
 {
 	foreach ($items as &$item)
 	{
 		if(is_array($item))
 		{
-			array_iconv($item, $func);
+			array_iconv($item);
 		}
 		else
 		{
