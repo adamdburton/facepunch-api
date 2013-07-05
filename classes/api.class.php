@@ -404,7 +404,7 @@ function get_function_info($object, $function)
 					if($p->getName() == $match[1])
 					{
 						$default = $p->getDefaultValue();
-						$param['default'] = is_bool() ? (int) $default : $default;
+						$param['default'] = is_bool($default) ? (int) $default : $default;
 					}
 				}
 			}
