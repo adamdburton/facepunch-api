@@ -5,7 +5,8 @@ class Auth extends Module
 	protected $description = 'Authenticate';
 	protected $requires_authentication = false;
 	
-	private $session_id = false;
+	private $session_id;
+	public $user_id;
 	
 	/**
 		Description: Authenticate with username and password
@@ -100,9 +101,10 @@ class Auth extends Module
 	
 	public function _set_session_id($session_id)
 	{
-		if($this->api->cache($session_id))
+		if($data = $this->api->cache($session_id))
 		{
 			$this->session_id = $session_id;
+			$this->user_id = $data['user_id'];
 			return true;
 		}
 		

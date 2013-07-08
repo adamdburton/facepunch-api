@@ -47,10 +47,43 @@ class User extends Module
 	**/
 	public function message($id, $message)
 	{
-		// TODO: This
-		//$ret = $this->api->request('member.php', $data, 'POST');
+		$data = array(
+			'ajax' => 1,
+			'wysiwyg' => 0,
+			'fromquickcomment' => 1,
+			'do' => 'message',
+			'u' => $id,
+			'loggedinuser' => $this->api->user_id,
+			'parseurl' => 1,
+			'message_backup' => $message,
+			'message' => $message
+		);
+		
+		$data = array_merge($data, $this->_get_view_security_data($id));
+		
+		$ret = $this->api->request('visitormessage.php?do=message', $data, 'POST');
 		
 		return true;
+	}
+	
+	public function _get_view_security_data($id = null)
+	{
+		$data = array(
+			'u' => $id,
+		);
+		
+		$ret = $this->api->request('member.php', $data);
+		
+		$securitytoken = quick_match('SECURITYTOKEN = \"([0-9a-z\-]+)\";', $ret);
+		
+		if(!$securitytoken)
+		{
+			$this->api->error('Security data not found.');
+		}
+		
+		return array(
+			'securitytoken' => $securitytoken
+		);
 	}
 }
 
