@@ -69,7 +69,7 @@ class User extends Module
 	public function _get_view_security_data($id = null)
 	{
 		$data = array(
-			'u' => $id,
+			'u' => $id
 		);
 		
 		$ret = $this->api->request('member.php', $data);
@@ -125,9 +125,9 @@ function parse_user($str)
 	
 	$user['last_activity'] = trim($html->find('dl.stats dd', 1)->plaintext);
 	
-	// Last activity
+	// Total posts
 	
-	$user['num_posts'] = (int) str_replace(',', '', trim($html->find('dl.stats dd', 2)->plaintext));
+	$user['posts_count'] = (int) str_replace(',', '', trim($html->find('dl.stats dd', 2)->plaintext));
 	
 	return $user;
 }

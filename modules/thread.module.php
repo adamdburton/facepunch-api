@@ -101,7 +101,7 @@ class Thread extends Module
 		
 		foreach($threads['threads'] as $index => $thread)
 		{
-			if(!isset($thread['num_new_posts']))
+			if(!isset($thread['new_posts_count']))
 			{
 				unset($threads['threads'][$index]);
 			}
@@ -302,7 +302,7 @@ function parse_posts($str)
 			'online' => $username_a->hasClass('online'),
 			'avatar_url' => FACEPUNCH_URL . 'image.php?u=' . $user_id,
 			'join_date' => $join_date,
-			'num_posts' => $post_count
+			'posts_count' => $post_count
 		);
 		
 		// Post Info

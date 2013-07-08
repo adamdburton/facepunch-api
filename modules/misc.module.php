@@ -447,7 +447,7 @@ function parse_events($str)
 				case 'toobig':
 					$event['thread'] = $links[1]->innertext;
 					$event['thread_id'] = quick_match('t\=(\d+)', $links[1]->href);
-					$event['num_posts'] = intval($bolds[0]->innertext);
+					$event['posts_count'] = intval($bolds[0]->innertext);
 					
 					break;
 					

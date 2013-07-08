@@ -97,13 +97,13 @@ function parse_forums($str)
 		
 		// Threads and Posts
 		
-		$forum['num_threads'] = (int) str_replace(',', '', quick_match('([0-9,]+) Threads', $title->title));
+		$forum['threads_count'] = (int) str_replace(',', '', quick_match('([0-9,]+) Threads', $title->title));
 		
-		$forum['num_posts'] = (int) str_replace(',', '', quick_match('([0-9,]+) Posts', $title->title));
+		$forum['posts_count'] = (int) str_replace(',', '', quick_match('([0-9,]+) Posts', $title->title));
 		
 		// Viewers
 		
-		$forum['num_viewers'] = (int) quick_match('(\d+)', $forum_row->find('span.viewing', 0));
+		$forum['viewers_count'] = (int) quick_match('(\d+)', $forum_row->find('span.viewing', 0));
 		
 		// Last post
 		
@@ -246,7 +246,7 @@ function parse_forum($str, $include_subforums = true)
 		
 		// Pages
 		
-		$thread['num_pages'] = ($last_a = $title->find('span.threadpagenav a', -1)) ? (int) str_replace(' Last', '', $last_a->plaintext) : 1;
+		$thread['pages_count'] = ($last_a = $title->find('span.threadpagenav a', -1)) ? (int) str_replace(' Last', '', $last_a->plaintext) : 1;
 		
 		// New Posts
 		
@@ -254,7 +254,7 @@ function parse_forum($str, $include_subforums = true)
 		
 		if($newposts)
 		{
-			$thread['num_new_posts'] = (int) quick_match('(\d+) new', $newposts->plaintext);
+			$thread['new_posts_count'] = (int) quick_match('(\d+) new', $newposts->plaintext);
 		}
 		
 		// Thread Author
@@ -271,7 +271,7 @@ function parse_forum($str, $include_subforums = true)
 		
 		// Viewers
 		
-		$thread['num_viewers'] = ($viewers = $author->find('span.viewers', 0)) ? (int) str_replace(' reading', '', $viewers->plaintext) : 0;
+		$thread['viewers_count'] = ($viewers = $author->find('span.viewers', 0)) ? (int) str_replace(' reading', '', $viewers->plaintext) : 0;
 		
 		// Thread rating
 		
@@ -308,7 +308,7 @@ function parse_forum($str, $include_subforums = true)
 		
 		if($replies)
 		{
-			$thread['num_replies'] = (int) str_replace(',', '', $replies->plaintext);
+			$thread['replies_count'] = (int) str_replace(',', '', $replies->plaintext);
 		}
 		
 		// Views
@@ -317,7 +317,7 @@ function parse_forum($str, $include_subforums = true)
 		
 		if($views)
 		{
-			$thread['num_views'] = (int) str_replace(',', '', $views->plaintext);
+			$thread['views_count'] = (int) str_replace(',', '', $views->plaintext);
 		}
 		
 		$threads[] = $thread;
