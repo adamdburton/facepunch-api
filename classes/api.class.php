@@ -386,7 +386,7 @@ function get_function_info($object, $function)
 	
 	$comment = trim(substr($function_reflection->getDocComment(), 4, -4));
 	
-	$description = quick_match('Description\: ([A-Za-z0-9.,() ]+)', $comment);
+	$description = quick_match('Description\: ([A-Za-z0-9.,()\'\" ]+)', $comment);
 	$method = quick_match('Method\: (GET|POST)', $comment);
 	$return = quick_match('Return\: (.+)', $comment);
 	
