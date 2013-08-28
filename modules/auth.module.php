@@ -40,9 +40,9 @@ class Auth extends Module
 		
 		$ret = $this->api->request('login.php?do=login&s=' . $s, $data, 'POST', array(), true);
 		
-		if(preg_match('#Set-Cookie: bb_userid;#U', $ret))
+		if(preg_match('/Set-Cookie: bb_userid;/U', $ret))
 		{
-			preg_match_all('#Set-Cookie: (.*);#U', $ret, $matches);
+			preg_match_all('/Set-Cookie: (.*);/U', $ret, $matches);
 		
 			$userid = quick_match('bb_userid=(\d+);', $ret);
 			$password = quick_match('bb_password=([a-z0-9]+);', $ret);
@@ -62,7 +62,7 @@ class Auth extends Module
 			return array('session_id' => $session_id, 'user_id' => $userid);
 		}
 		else
-		{
+		{echo $ret;
 			$this->api->error('Invalid username or password.');
 		}
 	}
