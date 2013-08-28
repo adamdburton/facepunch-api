@@ -62,7 +62,7 @@ class Auth extends Module
 			return array('session_id' => $session_id, 'user_id' => $userid);
 		}
 		else
-		{echo $ret;
+		{
 			$this->api->error('Invalid username or password.');
 		}
 	}
