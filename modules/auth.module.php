@@ -18,18 +18,27 @@ class Auth extends Module
 	**/
 	public function login($username, $password)
 	{
+		$ret = $this->api->request('');
+		$s = quick_match('s\=(.*?)&', $ret);
+		
+		if(!$s)
+		{
+			$this->api->error('Couldn\'t create a valid session.');
+		}
+		
 		$data = array(
 			'securitytoken' => 'guest',
 			'vb_login_username' => $username,
+			'vb_login_password_hint' => 'Password',
 			'vb_login_md5password' => $password,
 			'vb_login_md5password_utf' => $password,
 			'vb_login_password_hint' => '',
 			'cookieuser' => 1,
 			'do' => 'login',
-			's' => ''
+			's' => $s
 		);
 		
-		$ret = $this->api->request('login.php?do=login', $data, 'POST', array(), true);
+		$ret = $this->api->request('login.php?do=login&s=' . $s, $data, 'POST', array(), true);
 		
 		if(preg_match('#Set-Cookie: bb_userid;#U', $ret))
 		{
