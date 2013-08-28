@@ -14,7 +14,6 @@ class SimpleCache {
 
     public function get($key, $expiration = 3600)
     {
-
         if ( !is_dir($this->dir) OR !is_writable($this->dir))
         {
             return FALSE;
@@ -59,7 +58,6 @@ class SimpleCache {
 
     public function set($key, $data)
     {
-
         if ( !is_dir($this->dir) OR !is_writable($this->dir))
         {
             return FALSE;

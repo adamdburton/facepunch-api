@@ -31,8 +31,10 @@ class Auth extends Module
 		
 		$ret = $this->api->request('login.php?do=login', $data, 'POST', array(), true);
 		
-		if(preg_match_all('#Set-Cookie: (.*);#U', $ret, $matches) > 0)
+		if(preg_match('#Set-Cookie: bb_userid;#U', $ret))
 		{
+			preg_match_all('#Set-Cookie: (.*);#U', $ret, $matches);
+		
 			$userid = quick_match('bb_userid=(\d+);', $ret);
 			$password = quick_match('bb_password=([a-z0-9]+);', $ret);
 			$sessionhash = quick_match('bb_sessionhash=([a-z0-9]+);', $ret);
