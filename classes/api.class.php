@@ -322,7 +322,7 @@ class API
 		{
 			if(filemtime('./down.txt') < strtotime('-1 hour'))
 			{
-				pushover('Facepunch Unavailable!');
+				mail('adam@burt0n.net', 'FP API', 'Facepunch Unavailable!');
 				touch('./down.txt');
 			}
 			

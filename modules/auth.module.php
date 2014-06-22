@@ -106,6 +106,8 @@ class Auth extends Module
 	/**
 		Description: Logout and destroy session
 		Method: POST
+		Return: session_id | string | Null Session ID
+		Return: user_id | integer | Null User ID
 	**/
 	public function logout()
 	{

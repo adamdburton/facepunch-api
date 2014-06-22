@@ -23,7 +23,7 @@ function email_errors($code, $message, $file, $line)
 		default:    $e_type = 'E_UNKNOWN'; break;
 	}
 	
-	mail('adam@burt0n.net', 'FP API ERROR', sprintf('%s: "%s" (%s line %s)', $e_type, $message, $file, $line));
+	mail('adam@burt0n.net', 'FP API', sprintf('%s: "%s" (%s line %s)', $e_type, $message, $file, $line));
 }
 
 define('DEBUG', true);
