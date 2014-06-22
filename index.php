@@ -1,8 +1,6 @@
 <?php
 
-include('../burt0n.net/fpbots/functions/pushover.php');
-
-function pushover_errors($code, $message, $file, $line)
+function email_errors($code, $message, $file, $line)
 {
 	switch($code)
 	{
@@ -25,7 +23,7 @@ function pushover_errors($code, $message, $file, $line)
 		default:    $e_type = 'E_UNKNOWN'; break;
 	}
 	
-	pushover(sprintf('%s: "%s" (%s line %s)', $e_type, $message, $file, $line));
+	mail('adam@burt0n.net', 'FP API ERROR', sprintf('%s: "%s" (%s line %s)', $e_type, $message, $file, $line));
 }
 
 define('DEBUG', true);
@@ -33,7 +31,7 @@ define('DEBUG', true);
 if(DEBUG)
 {
 	//ini_set('display_errors', 1);
-	set_error_handler('pushover_errors', E_ALL);
+	set_error_handler('email_errors', E_ALL);
 }
 
 $start_time = microtime(true);
@@ -56,5 +54,6 @@ header('Access-Control-Allow-Origin: *');
 // Here we go!
 
 $api = new API();
+$api->run();
 
 ?>

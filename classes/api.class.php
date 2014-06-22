@@ -33,7 +33,10 @@ class API
 			
 			$this->cachestore = new SimpleCache('./cache');
 		}
-		
+	}
+	
+	function run()
+	{
 		// Get the uri and split the request
 		
 		$path_info = !empty($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : (!empty($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO'] : '');
@@ -376,6 +379,11 @@ class API
 		}
 		
 		return false;
+	}
+	
+	function cache_clear($key)
+	{
+		$this->cachestore->clear($key);
 	}
 }
 

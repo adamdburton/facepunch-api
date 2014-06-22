@@ -5,8 +5,8 @@ class Auth extends Module
 	protected $description = 'Authenticate';
 	protected $requires_authentication = false;
 	
-	private $session_id;
-	public $user_id;
+	private $session_id = null;
+	public $user_id = null;
 	
 	/**
 		Description: Authenticate with username and password
@@ -100,6 +100,42 @@ class Auth extends Module
 			$this->session_id = null;
 			$this->api->cache($session_id, null);
 			$this->api->error('Invalid cookies.');
+		}
+	}
+	
+	/**
+		Description: Logout and destroy session
+		Method: POST
+	**/
+	public function logout()
+	{
+		$ret = $this->api->request('login.php?do=logout');
+		
+		$logouthash = quick_match('logouthash=(.*?)"', $ret);
+		
+		if($logouthash)
+		{
+			$ret = $this->api->request('login.php?do=logout', array(
+				'logouthash' => $logouthash
+			));
+			
+			if(quick_match('All cookies cleared!', $ret))
+			{
+				$this->api->cache_clear($session_id);
+				
+				$this->session_id = null;
+				$this->user_id = null;
+				
+				return array('session_id' => null, 'user_id' => null);
+			}
+			else
+			{
+				$this->api->error('Logout failed, please try again.');
+			}
+		}
+		else
+		{
+			$this->api->error('Logouthash not found.');
 		}
 	}
 	
